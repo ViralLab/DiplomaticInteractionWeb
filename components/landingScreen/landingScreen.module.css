@@ -5,10 +5,10 @@
 .landingText {
     font-size: 42px;
     font-weight: bold;
-    color: white;
-    text-shadow: 0 0 5px #6682a9;
+    color: black;
     line-height: 50px;
-    padding: 3px;
+    padding: 0 4rem;
+    text-align: left;
 }
 
 .infoRow{
@@ -24,6 +24,13 @@
     width: 80%;
     height: 100%;
     display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.iconsContainer :global(.column) {
+    display: flex !important;
+    align-items: flex-start !important;
 }
 
 .scrollRow{
