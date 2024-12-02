@@ -12,51 +12,51 @@ const Team = () => {
 			<div className={styles.memberContainer}>
 				<div className={styles.memberRow}>
 					<TeamMember
-						imageUrl='/images/nihatmugurtay.jpeg'
+						imageUrl='/images/people/nihatmugurtay.jpeg'
 						name='Nihat Muğurtay'
 						title='Project Manager'
 					/>
 					<div className={styles.separatorBig} />
 					<TeamMember
-						imageUrl='/images/onurvarol.jpeg'
+						imageUrl='/images/people/onurvarol.jpeg'
 						name='Onur Varol'
 						title='Project Manager'
 					/>
 				</div>
 				<div className={styles.memberRow}>
 					<TeamMember
-						imageUrl='/images/kaanguraysirin.jpeg'
+						imageUrl='/images/people/kaanguraysirin.jpeg'
 						name='Kaan Güray Şirin'
 						title='AI Engineer'
 					/>
 					<div className={styles.separatorSmall} />
 					<TeamMember
-						imageUrl='/images/aycademir.jpeg'
+						imageUrl='/images/people/aycademir.jpeg'
 						name='Ayça Demir'
 						title='AI Engineer'
 					/>
 					<div className={styles.separatorSmall} />
 					<TeamMember
-						imageUrl='/images/batuhanbahceci.jpeg'
+						imageUrl='/images/people/batuhanbahceci.jpeg'
 						name='Batuhan Bahçeci'
 						title='AI Engineer'
 					/>
 				</div>
 				<div className={styles.memberRow}>
 					<TeamMember
-						imageUrl='/images/fazligoktugyilmaz.jpeg'
+						imageUrl='/images/people/fazligoktugyilmaz.jpeg'
 						name='Fazlı Göktuğ Yılmaz'
 						title='AI Engineer'
 					/>
 					<div className={styles.separatorSmall} />
 					<TeamMember
-						imageUrl='/images/kaanguraysirin.jpeg'
+						imageUrl='/images/people/melisgemalmaz.jpeg'
 						name='Melis Gemalmaz'
 						title='AI Engineer'
 					/>
 					<div className={styles.separatorSmall} />
 					<TeamMember
-						imageUrl='/images/yunuskerestecioglu.jpg'
+						imageUrl='/images/people/yunuskerestecioglu.jpg'
 						name='Yunus Tan Kerestecioğlu'
 						title='Web Developer'
 					/>
