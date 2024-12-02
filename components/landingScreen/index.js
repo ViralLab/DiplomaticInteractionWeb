@@ -29,30 +29,40 @@ const LandingScreen = ({ onScroll }) => {
 			</Grid.Row>
 
 			<Grid.Row className={styles.infoRow}>
-				<Grid.Column width={16} className={styles.iconsContainer}>
-					<div className={styles.iconsWrapper} style={{ display: 'flex', alignItems: 'flex-start' }}>
-						<LandingIcon
-							icon='flag'
-							desc='Thousand of articles spanning more than 20 years'
-						/>
-						<LandingIcon
-							icon='globe'
-							desc='Interaction between countries mapped globally by extraction mentions of countries and politicians.'
-						/>
-						<LandingIcon
-							icon='map outline'
-							desc='We offer detailed interactive tool for you to inspecting data.'
-						/>
-						<LandingIcon
-							icon='balance scale'
-							desc='Country-level insights extracted for topic of text and visuals shared online.'
-						/>
+				<Grid.Column className={styles.iconsContainer}>
+					<div className={styles.iconsWrapper} style={{ 
+						display: 'flex', 
+						alignItems: 'center', 
+						justifyContent: 'space-between'
+					}}>
+						<div className={styles.cardBox} style={{ margin: '0 1rem' }}>
+							<LandingIcon icon='flag' />
+							<p>Thousand of articles spanning more than 20 years</p>
+						</div>
+						<div className={styles.cardBox}>
+							<LandingIcon
+								icon='globe'
+							/>
+							<p>Interaction between countries mapped globally by extraction mentions of countries and politicians.</p>
+						</div>
+						<div className={styles.cardBox}>
+							<LandingIcon
+								icon='map outline'
+							/>
+							<p>We offer detailed interactive tool for you to inspecting data.</p>
+						</div>
+						<div className={styles.cardBox}>
+							<LandingIcon
+								icon='balance scale'
+							/>
+							<p>Country-level insights extracted for topic of text and visuals shared online.</p>
+						</div>
 					</div>
 				</Grid.Column>
 			</Grid.Row>
 
 			<Grid.Row className={styles.scrolRow}>
-				<Grid.Column width={16} style={{ marginTop: '3rem', marginBottom: '1rem' }} textAlign='center' verticalAlign='top'>
+				<Grid.Column width={16} style={{ marginTop: '4rem', marginBottom: '1rem' }} textAlign='center' verticalAlign='top'>
 					<Icon
 						name='angle double down'
 						size='huge'
