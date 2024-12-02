@@ -14,8 +14,8 @@ const Header = ({ toggleSidebar }) => {
 				onClick={toggleSidebar}
 			/>
 			<div className={styles.rightNavbar}>
-				<Icon name='handshake' size='big' />
-				<div>DIPLOMATIC INTERACTIONS</div>
+				{/* I want to add a logo here */}
+				<img src='/images/logo.png' alt='logo' className={styles.logo} />
 			</div>
 		</Menu>
 	)

@@ -14,3 +14,10 @@
     justify-content: center;
     gap: 15px;
 }
+
+.logo {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    width: 275px; 
+    height: auto;
+}
