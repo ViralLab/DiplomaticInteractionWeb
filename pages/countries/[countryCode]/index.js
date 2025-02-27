@@ -282,7 +282,7 @@ const CountryInteraction = ({ data }) => {
 			</Segment>
 			<div className={styles.interactionVisContainer}>
 				{visualizationFilters.includes('table') && (
-					<Segment raised inverted>
+					<Segment raised>
 						<Label as='div' color='teal' ribbon size='medium'>
 							Table Visualization
 						</Label>
@@ -290,7 +290,7 @@ const CountryInteraction = ({ data }) => {
 					</Segment>
 				)}
 				{visualizationFilters.includes('network') && (
-					<Segment raised inverted>
+					<Segment raised>
 						<Label as='div' color='teal' ribbon size='medium'>
 							Network Visualization
 						</Label>
@@ -298,7 +298,7 @@ const CountryInteraction = ({ data }) => {
 					</Segment>
 				)}
 				{visualizationFilters.includes('cartography') && (
-					<Segment raised inverted>
+					<Segment raised>
 						<Label as='div' color='teal' ribbon size='medium'>
 							Cartography Visualization
 						</Label>

@@ -10,7 +10,7 @@ const LandingScreen = ({ onScroll }) => {
 		<Grid>
 			<Grid.Row className={styles.headerRow}>
 				<Grid.Column width={10} textAlign='center' verticalAlign='middle' >
-					<div className={styles.landingText} style={{ padding: '0 4rem', color: 'black'}}>
+					<div className={styles.landingText} style={{ padding: '0 6rem', color: 'black'}}>
 						<Link href="/">
 							<span 
 								style={{ color: 'rgb(25, 120, 120)', cursor: 'pointer' }}
@@ -19,7 +19,7 @@ const LandingScreen = ({ onScroll }) => {
 							</span>
 						</Link> project gathers reports and news for nearly 200 countries globally. Using NLP and Network Science, we map the interactions topically and longitudinally.
 					</div>
-					<div className={styles.descriptionText} style={{ padding: '0 4rem', marginTop: '2rem', fontSize: '20px', color: 'gray', textAlign: 'left', lineHeight: '1.6'}}>
+					<div className={styles.descriptionText} style={{ padding: '0 6rem', marginTop: '2rem', fontSize: '20px', color: 'gray', textAlign: 'left', lineHeight: '1.6'}}>
 						We scrape websites of Executive and Ministry of Foreign Affairs of these countries to collect reports and news.
 					</div>
 				</Grid.Column>
@@ -35,7 +35,7 @@ const LandingScreen = ({ onScroll }) => {
 						alignItems: 'center', 
 						justifyContent: 'space-between'
 					}}>
-						<div className={styles.cardBox} style={{ margin: '0 1rem' }}>
+						<div className={styles.cardBox}>
 							<LandingIcon icon='flag' />
 							<p>Thousand of articles spanning more than 20 years</p>
 						</div>
@@ -62,7 +62,7 @@ const LandingScreen = ({ onScroll }) => {
 			</Grid.Row>
 
 			<Grid.Row className={styles.scrolRow}>
-				<Grid.Column width={16} style={{ marginTop: '4rem', marginBottom: '1rem' }} textAlign='center' verticalAlign='top'>
+				<Grid.Column width={16} style={{ marginTop: '1rem', marginBottom: '1rem' }} textAlign='center' verticalAlign='top'>
 					<Icon
 						name='angle double down'
 						size='huge'
