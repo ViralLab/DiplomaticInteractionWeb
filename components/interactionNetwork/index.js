@@ -53,18 +53,35 @@ const InteractionNetwork = ({ networkData }) => {
 			borderWidth: 2,
 			size: 50,
 			color: {
-				border: '#222222',
-				background: '#666666',
+				border: '#FFFFFF',
+				background: '#197878',
 			},
-			font: { color: '#000000' },
+			padding: "10px",
+			font: { color: '#FFFFFF' },
 		},
 		edges: {
 			color: '#000000',
+			width: 1.5,
 		},
 		shadow: true,
 		smooth: true,
 		height: '550px',
 	}
+
+	const events = {
+		beforeDrawing: (ctx) => {
+			// save current translate/zoom
+			ctx.save();
+			// reset transform to identity
+			ctx.setTransform(1, 0, 0, 1, 0, 0);
+			// fill background with solid white
+			ctx.fillStyle = '#ffffff';
+			ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+			// restore old transform
+			ctx.restore();
+		}
+	}
+
 	useEffect(() => {
 		setIsClient(true)
 		setGraphData(convertDataToGraph(networkData))
@@ -74,6 +91,6 @@ const InteractionNetwork = ({ networkData }) => {
 	} else if (!networkData) {
 		return null
 	}
-	return <Graph graph={graphData} options={options} />
+	return <Graph graph={graphData} options={options} events={events} />
 }
 export default InteractionNetwork

@@ -59,6 +59,10 @@ const Layout = ({ app }) => {
 					<Icon name='users' />
 					Our Team
 				</MenuItem>
+				<MenuItem as='a' href='/about' active={isActiveItem('about')}>
+					<Icon name='users' />
+					About Us
+				</MenuItem>
 			</Sidebar>
 
 			<SidebarPusher>

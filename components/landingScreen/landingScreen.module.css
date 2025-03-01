@@ -5,14 +5,10 @@
 .landingText {
     font-size: 42px;
     font-weight: bold;
-    color: white;
-    text-shadow: 0 0 5px #6682a9;
+    color: black;
     line-height: 50px;
-    padding: 3px;
-}
-
-.infoRow{
-    height: 15vh;
+    padding: 0 4rem;
+    text-align: left;
 }
 
 .iconsContainer{
@@ -24,6 +20,13 @@
     width: 80%;
     height: 100%;
     display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.iconsContainer :global(.column) {
+    display: flex !important;
+    align-items: flex-start !important;
 }
 
 .scrollRow{
@@ -34,4 +37,12 @@
     color: #6682a9;
     cursor: pointer;
     margin: 3px;
+}
+
+.cardBox {
+    width: 100%;
+    display: flex;
+    padding: 0 1rem;
+    flex-direction: column;
+    align-items: center;
 }
