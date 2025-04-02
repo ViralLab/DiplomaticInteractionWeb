@@ -20,25 +20,36 @@ const LandingScreen = ({ onScroll }) => {
 				</Grid.Column>
 			</Grid.Row>
 
-			<Grid.Row className={styles.infoRow}>
-				<Grid.Column width={16} className={styles.iconsContainer}>
-					<div className={styles.iconsWrapper}>
-						<LandingIcon
-							icon='flag'
-							desc='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse viverra.'
-						/>
-						<LandingIcon
-							icon='globe'
-							desc='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse viverra.'
-						/>
-						<LandingIcon
-							icon='map outline'
-							desc='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse viverra.'
-						/>
-						<LandingIcon
-							icon='balance scale'
-							desc='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse viverra.'
-						/>
+		<Grid.Row className={styles.infoRow}>
+				<Grid.Column className={styles.iconsContainer}>
+					<div className={styles.iconsWrapper} style={{ 
+						display: 'flex', 
+						alignItems: 'center', 
+						justifyContent: 'space-between',
+						gap: '2rem'
+					}}>
+						<div className={styles.cardBox}>
+							<LandingIcon icon='flag' />
+							<p>Thousand of articles spanning more than 20 years.</p>
+						</div>
+						<div className={styles.cardBox}>
+							<LandingIcon
+								icon='globe'
+							/>
+							<p>Interaction between countries mapped globally by extraction mentions of countries and politicians.</p>
+						</div>
+						<div className={styles.cardBox}>
+							<LandingIcon
+								icon='map outline'
+							/>
+							<p>We offer detailed interactive tool for you to inspecting data.</p>
+						</div>
+						<div className={styles.cardBox}>
+							<LandingIcon
+								icon='balance scale'
+							/>
+							<p>Country-level insights extracted for topic of text and visuals shared online.</p>
+						</div>
 					</div>
 				</Grid.Column>
 			</Grid.Row>
