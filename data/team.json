@@ -1,0 +1,46 @@
+{
+  "leaders": [
+    {
+      "imageUrl": "/images/nihatmugurtay.jpeg",
+      "name": "Nihat Muğurtay",
+      "title": "Project Manager"
+    },
+    {
+      "imageUrl": "/images/onurvarol.jpeg",
+      "name": "Onur Varol",
+      "title": "Project Manager"
+    }
+  ],
+  "members": [
+    {
+      "imageUrl": "/images/kaanguraysirin.jpeg",
+      "name": "Kaan Güray Şirin",
+      "title": "AI Engineer"
+    },
+    {
+      "imageUrl": "/images/aycademir.jpeg",
+      "name": "Ayça Demir",
+      "title": "AI Engineer"
+    },
+    {
+      "imageUrl": "/images/batuhanbahceci.jpeg",
+      "name": "Batuhan Bahçeci",
+      "title": "AI Engineer"
+    },
+    {
+      "imageUrl": "/images/fazligoktugyilmaz.jpeg",
+      "name": "Fazlı Göktuğ Yılmaz",
+      "title": "AI Engineer"
+    },
+    {
+      "imageUrl": "/images/kaanguraysirin.jpeg",
+      "name": "Melis Gemalmaz",
+      "title": "AI Engineer"
+    },
+    {
+      "imageUrl": "/images/yunuskerestecioglu.jpg",
+      "name": "Yunus Tan Kerestecioğlu",
+      "title": "Web Developer"
+    }
+  ]
+} 

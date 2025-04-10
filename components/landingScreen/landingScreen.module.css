@@ -11,6 +11,10 @@
     text-align: left;
 }
 
+.infoRow{
+    height: 15vh;
+}
+
 .iconsContainer{
     display: flex !important;
     justify-content: center !important;
