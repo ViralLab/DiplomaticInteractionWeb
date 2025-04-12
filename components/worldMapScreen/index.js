@@ -20,6 +20,7 @@ import {
 } from 'semantic-ui-react'
 import InteractionNetwork from '@components/interactionNetwork'
 import {camelDict} from "../../data/countries/camelCaseDict"
+import interactions from '../../data/interactions'
 
 const WorldMapScreen = () => {
 	const [display, setDisplay] = useState('cartography')
@@ -128,21 +129,10 @@ const WorldMapScreen = () => {
 		}
 	}
 	useEffect(() => {
-		const fetchData = async () => {
-			setLoading(true)
-			try {
-				const response = await fetch('/api/countries')
-				const jsonData = await response.json()
-				setOriginalData(jsonData)
-				const filteredData = handleDataFilter(jsonData, {})
-				setFilteredData(filteredData)
-				setLoading(false)
-			} catch (error) {
-				console.error('Error fetching data:', error)
-			}
-		}
-
-		fetchData()
+		setOriginalData(interactions)
+		const filteredData = handleDataFilter(interactions, {})
+		setFilteredData(filteredData)
+		setLoading(false)
 	}, [])
 	return (
 		<SidebarPushable>

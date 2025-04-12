@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d out"
   },
   "dependencies": {
     "chart.js": "^4.4.3",
@@ -18,5 +20,9 @@
     "react-graph-vis": "^1.0.7",
     "semantic-ui-css": "^2.5.0",
     "semantic-ui-react": "^2.1.5"
-  }
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  },
+  "homepage": "https://ViralLab.github.io/DiplomaticInteractionWeb"
 }

@@ -213,3 +213,5 @@ const invertedCamelCodeDict = {
 		ZM: 'zambia',
 		ZW: 'zimbabwe',
 	}
+
+export { invertedCamelCodeDict }
