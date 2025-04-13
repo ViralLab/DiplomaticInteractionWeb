@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "static": "next build && next export && touch ./out/.nojekyll && echo 'www.globaldiplomacy.net' > ./out/CNAME",
+    "static": "next build && touch ./out/.nojekyll && echo 'www.globaldiplomacy.net' > ./out/CNAME",
     "deploy": "gh-pages -d out -t true"
   },
   "dependencies": {

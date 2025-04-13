@@ -1,10 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  basePath: '/DiplomaticInteractionWeb',
-  images: {
-    unoptimized: true,
-  },
-}
-
-module.exports = nextConfig 
+    output: 'export',
+    images: {
+      unoptimized: true,
+    },
+    basePath: process.env.NODE_ENV === 'production' ? '/DiplomaticInteractionWeb' : '',
+  }
+  
+  module.exports = nextConfig
