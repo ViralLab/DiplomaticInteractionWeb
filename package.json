@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "static": "next build && touch ./out/.nojekyll && echo 'www.globaldiplomacy.net' > ./out/CNAME",
-    "deploy": "gh-pages -d out -t true"
+    "deploy": "gh-pages -d out"
   },
   "dependencies": {
     "chart.js": "^4.4.3",
