@@ -4,7 +4,7 @@ import { Segment, Label, Dropdown } from 'semantic-ui-react'
 import InteractionTable from '@components/interactionTable'
 import InteractionNetwork from '@/components/interactionNetwork'
 import InteractionCartography from '@/components/interactionCartography'
-import styles from './countryCode.module.css'
+import styles from './[countryCode].module.css'
 import { invertedCamelCodeDict } from '../../data/countries/invertedCamelCaseDict'
 import interactions from '../../data/interactions'
 
