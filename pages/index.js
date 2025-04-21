@@ -2,12 +2,6 @@ import LandingScreen from '@components/landingScreen'
 import React, { useEffect } from 'react'
 import WorldMapScreen from '@components/worldMapScreen'
 
-const scrollToWorldMapSection = () => {
-	const section = document.getElementById('mapSection')
-	if (section) {
-		section.scrollIntoView({ behavior: 'smooth' })
-	}
-}
 const Home = () => {
 	useEffect(() => {
 		const handleScroll = () => {
@@ -24,6 +18,13 @@ const Home = () => {
 		window.addEventListener('scroll', handleScroll)
 		return () => window.removeEventListener('scroll', handleScroll)
 	}, [])
+
+	const scrollToWorldMapSection = () => {
+		const section = document.getElementById('mapSection')
+		if (section) {
+			section.scrollIntoView({ behavior: 'smooth' })
+		}
+	}
 
 	return (
 		<div>

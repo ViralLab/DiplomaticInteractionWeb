@@ -11,6 +11,7 @@ import {
 	Sidebar,
 } from 'semantic-ui-react'
 import styles from './layout.module.css'
+import Link from 'next/link'
 
 const Layout = ({ app }) => {
 	const [visible, setVisible] = useState(false)
@@ -31,35 +32,35 @@ const Layout = ({ app }) => {
 				width='wide'
 				className={styles.sidebarContainer}
 			>
-				<MenuItem as='a' href='/' active={isActiveItem('')}>
+				<MenuItem as={Link} href="/" active={isActiveItem('')}>
 					<Icon name='home' />
 					Home
 				</MenuItem>
-				<MenuItem as='a' href='/countries' active={isActiveItem('countries')}>
+				<MenuItem as={Link} href="/countries" active={isActiveItem('countries')}>
 					<Icon name='world' />
 					Countries
 				</MenuItem>
 				<MenuItem
-					as='a'
-					href='/interactions'
+					as={Link}
+					href="/interactions"
 					active={isActiveItem('interactions')}
 				>
 					<Icon name='exchange' />
 					Interactions
 				</MenuItem>
 				<MenuItem
-					as='a'
-					href='/publications'
+					as={Link}
+					href="/publications"
 					active={isActiveItem('publications')}
 				>
 					<Icon name='newspaper' />
 					Publications
 				</MenuItem>
-				<MenuItem as='a' href='/team' active={isActiveItem('team')}>
+				<MenuItem as={Link} href="/team" active={isActiveItem('team')}>
 					<Icon name='users' />
 					Our Team
 				</MenuItem>
-				<MenuItem as='a' href='/about' active={isActiveItem('about')}>
+				<MenuItem as={Link} href="/about" active={isActiveItem('about')}>
 					<Icon name='users' />
 					About Us
 				</MenuItem>

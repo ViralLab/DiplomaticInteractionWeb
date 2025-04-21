@@ -37,7 +37,7 @@ const LandingScreen = ({ onScroll }) => {
 					}}>
 						<div className={styles.cardBox}>
 							<LandingIcon icon='flag' />
-							<p>Thousand of articles spanning more than 20 years</p>
+							<p>Thousand of articles spanning more than 20 years.</p>
 						</div>
 						<div className={styles.cardBox}>
 							<LandingIcon
