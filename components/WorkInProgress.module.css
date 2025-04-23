@@ -1,0 +1,17 @@
+.workInProgressContainer {
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.workInProgressContainer .header {
+    font-size: 1.5em;
+    color: #333;
+}
+
+.workInProgressContainer p {
+    font-size: 1.2em;
+    color: #666;
+}
