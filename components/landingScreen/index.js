@@ -62,7 +62,7 @@ const LandingScreen = ({ onScroll }) => {
 			</Grid.Row>
 
 			<Grid.Row className={styles.scrolRow}>
-				<Grid.Column width={16} style={{ marginTop: '1rem', marginBottom: '1rem' }} textAlign='center' verticalAlign='top'>
+				<Grid.Column width={16} style={{ marginTop: '4rem', marginBottom: '1rem' }} textAlign='center' verticalAlign='top'>
 					<Icon
 						name='angle double down'
 						size='huge'
