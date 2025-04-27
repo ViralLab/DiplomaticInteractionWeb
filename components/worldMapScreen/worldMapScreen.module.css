@@ -50,7 +50,7 @@
     width: 90%;
     display: flex;
     justify-content: space-between;
-    padding: 0px 20px; 
+    padding: 0px 20px;
     border-radius: 10px;
 }
 
@@ -63,4 +63,19 @@
     color: #6682a9;
     cursor: pointer;
     margin: 10px;
+}
+
+/* Ensure the menu is visible and on top */
+.menuContainer {
+    position: relative; /* or absolute, depending on your layout */
+    z-index: 10; /* Ensure it's above other elements */
+    background-color: #fff; /* Ensure background is visible */
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure no overflow issues */
+.parentContainer {
+    overflow: visible; /* or auto, depending on your needs */
 }

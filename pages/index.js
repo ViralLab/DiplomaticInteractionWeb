@@ -1,7 +1,7 @@
 import LandingScreen from '@components/landingScreen'
 import React, { useEffect } from 'react'
 import WorldMapScreen from '@components/worldMapScreen'
-
+import Footer from '@components/footer/index.js'
 const Home = () => {
 	useEffect(() => {
 		const handleScroll = () => {

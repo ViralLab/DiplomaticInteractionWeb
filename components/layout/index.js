@@ -12,7 +12,7 @@ import {
 } from 'semantic-ui-react'
 import styles from './layout.module.css'
 import Link from 'next/link'
-
+import Footer from '@components/footer/index.js'
 const Layout = ({ app }) => {
 	const [visible, setVisible] = useState(false)
 	const toggleSidebar = () => setVisible(!visible)
@@ -69,6 +69,7 @@ const Layout = ({ app }) => {
 			<SidebarPusher>
 				<Header toggleSidebar={toggleSidebar} />
 				<Content>{app}</Content>
+				<Footer />
 			</SidebarPusher>
 		</SidebarPushable>
 	)
