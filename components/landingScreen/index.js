@@ -55,31 +55,21 @@ const LandingScreen = ({ onScroll }) => {
 
 			<Grid.Row className={styles.infoRow}>
 				<Grid.Column className={styles.iconsContainer}>
-					<div className={styles.iconsWrapper} style={{ 
-						display: 'flex', 
-						alignItems: 'center', 
-						justifyContent: 'space-between'
-					}}>
+					<div className={styles.iconsWrapper}>
 						<div className={styles.cardBox}>
-							<LandingIcon icon='flag' />
+							<LandingIcon s icon='flag' />
 							<p>Thousand of articles spanning more than 20 years.</p>
 						</div>
 						<div className={styles.cardBox}>
-							<LandingIcon
-								icon='globe'
-							/>
+							<LandingIcon icon='globe' />
 							<p>Interaction between countries mapped globally by extraction mentions of countries and politicians.</p>
 						</div>
 						<div className={styles.cardBox}>
-							<LandingIcon
-								icon='map outline'
-							/>
-							<p>We offer detailed interactive tool for you to inspecting data.</p>
+							<LandingIcon icon='map outline' />
+							<p>We offer detailed interactive tool for you to inspect data.</p>
 						</div>
 						<div className={styles.cardBox}>
-							<LandingIcon
-								icon='balance scale'
-							/>
+							<LandingIcon icon='balance scale' />
 							<p>Country-level insights extracted for topic of text and visuals shared online.</p>
 						</div>
 					</div>

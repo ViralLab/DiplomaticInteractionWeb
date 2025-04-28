@@ -62,7 +62,7 @@ const Layout = ({ app }) => {
 				</MenuItem>
 				<MenuItem as={Link} href="/about" active={isActiveItem('about')}>
 					<Icon name='users' />
-					About Us
+					About
 				</MenuItem>
 			</Sidebar>
 

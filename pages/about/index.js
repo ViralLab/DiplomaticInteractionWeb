@@ -6,7 +6,7 @@ const About = () => {
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.title}>About</h1>
-        <p className={styles.subtitle}>Global Diplomatic Interaction Project</p>
+        <p className={styles.subtitle}>GlobalDiplomacyNET Project</p>
       </header>
       <div className={styles.content}>
         <div className={styles.section}>

@@ -1,5 +1,5 @@
 .headerRow{
-    height: 50vh;
+    height: 55vh;
 }
 
 .datasetRow{
@@ -19,21 +19,22 @@
     text-align: left;
 }
 
-.infoRow{
-    height: 15vh;
+.infoRow {
+    height: auto;
+    padding: 2rem 0;
 }
 
-.iconsContainer{
+.iconsContainer {
     display: flex !important;
     justify-content: center !important;
 }
 
-.iconsWrapper{
+.iconsWrapper {
     width: 80%;
-    height: 100%;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
+    gap: 2rem;
 }
 
 .iconsContainer :global(.column) {
@@ -46,17 +47,52 @@
 }
 
 .scrollIcon {
-    color: #6682a9;
+    color: #19787882;
     cursor: pointer;
     margin: 3px;
+    transition: color 0.4s;
+}
+
+@keyframes vibrate {
+    0% { transform: translateY(0); }
+    25% { transform: translateY(-2px); }
+    50% { transform: translateY(2px); }
+    75% { transform: translateY(-2px); }
+    100% { transform: translateY(0); }
+}
+
+.scrollIcon:hover {
+    animation: vibrate 1s linear infinite;
+    color: #197878;
 }
 
 .cardBox {
-    width: 100%;
+    flex: 1;
     display: flex;
-    padding: 0 1rem;
     flex-direction: column;
     align-items: center;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    transition: transform 0.3s, color 0.3s;
+    height: 175px;
+}
+
+.cardBox:hover {
+    transform: translateY(-5px);
+    color: #197878;
+}
+
+.cardBox p {
+    margin-top: 1rem;
+    font-size: 16px;
+    color: #555;
+}
+
+.cardBox :global(.icon) {
+    margin-top: 0.5rem;
 }
 
 .datasetContainer {
@@ -78,7 +114,6 @@
     display: flex;
     gap: 1rem;
 }
-
 .button {
     display: flex;
     align-items: center;
