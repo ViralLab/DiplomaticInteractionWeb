@@ -1,5 +1,13 @@
 .headerRow{
-    height: 70vh;
+    height: 50vh;
+}
+
+.datasetRow{
+    padding: 2rem 0;
+    background-color: #f9f9f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .landingText {
@@ -49,4 +57,42 @@
     padding: 0 1rem;
     flex-direction: column;
     align-items: center;
+}
+
+.datasetContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    padding: 0 6rem;
+}
+
+.datasetText {
+    font-size: 20px;
+    color: gray;
+    text-align: center;
+    line-height: 1.6;
+}
+
+.buttonContainer {
+    display: flex;
+    gap: 1rem;
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: white;
+    color: rgb(25, 120, 120);
+    border-radius: 5px;
+    border: solid;
+    border-color: rgb(25, 120, 120);
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.button:hover {
+    background-color: rgb(25, 120, 120);
+    color: white;
 }
