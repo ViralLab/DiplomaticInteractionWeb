@@ -62,7 +62,7 @@ const LandingScreen = ({ onScroll }) => {
 						</div>
 						<div className={styles.cardBox}>
 							<LandingIcon icon='globe' />
-							<p>Interaction between countries mapped globally by extraction mentions of countries and politicians.</p>
+							<p>Interactions mapped globally by extraction mentions of countries and politicians.</p>
 						</div>
 						<div className={styles.cardBox}>
 							<LandingIcon icon='map outline' />
@@ -77,7 +77,7 @@ const LandingScreen = ({ onScroll }) => {
 			</Grid.Row>
 
 			<Grid.Row className={styles.scrolRow}>
-				<Grid.Column width={16} style={{ marginTop: '4rem', marginBottom: '1rem' }} textAlign='center' verticalAlign='top'>
+				<Grid.Column width={16} style={{ marginTop: '2rem', marginBottom: '1rem' }} textAlign='center' verticalAlign='top'>
 					<Icon
 						name='angle double down'
 						size='huge'
