@@ -9,11 +9,13 @@ const orcidIconPath = '/icons/orcid.png'
 const TeamMember = ({ imageUrl, name, titles = [], socials = {} }) => {
 	return (
 		<div className={styles.memberContainer}>
-			<Image 
-				src={imageUrl} 
-				size='small' 
-				circular 
-			/>
+			<div className={styles.imageWrapper}>
+				<Image 
+					src={imageUrl} 
+					circular 
+					className={styles.memberImage}
+				/>
+			</div>
 			<div className={styles.memberName} style={{ marginTop: '0.75rem' }}>{name}</div>
 			<div className={styles.labelsContainer}>
 				{titles.map((title, index) => (

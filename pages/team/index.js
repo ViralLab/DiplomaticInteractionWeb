@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import TeamMember from '@components/teamMember'
 import { Transition, Modal, Divider, Header, Icon } from 'semantic-ui-react'
 import styles from './team.module.css'
+import Footer from '../../components/footer'
 
 const Team = () => {
 	const [visible, setVisible] = useState(false)
@@ -35,6 +36,7 @@ const Team = () => {
 										linkedin: 'https://www.linkedin.com/in/n-mu%C4%9Furtay-7620741b7/',
 										twitter: 'https://twitter.com/MugurtayN',
 									}}
+									imageStyle={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
 								/>
 							</div>
 							<div className={styles.separatorSmall} />
@@ -51,18 +53,26 @@ const Team = () => {
 										googleScholar: 'https://scholar.google.com/citations?user=t8YAefAAAAAJ',
 										orcid: 'https://orcid.org/0000-0002-3994-6106'
 									}}
+									imageStyle={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
 								/>
 							</div>
 							<div className={styles.separatorSmall} />
 							<div className={styles.memberProfile}>
 								<TeamMember
-									imageUrl=""
+									imageUrl="/images/people/meltemmuftulerbac.png"
 									name='Meltem Müftüler-Baç'
 									titles={['Advisor']}
 									socials={{
-										linkedin: '',
-										github: '',
-										googleScholar: ''
+										email: 'muftuler@sabanciuniv.edu',
+										website: 'http://myweb.sabanciuniv.edu/muftuler',
+										googleScholar: 'https://scholar.google.com.tr/citations?user=G7EFKhEAAAAJ&hl=en'
+									}}
+									imageStyle={{ 
+										width: '150px', 
+										height: '150px', 
+										borderRadius: '50%', 
+										objectFit: 'cover',
+										backgroundColor: '#f0f0f0'
 									}}
 								/>
 							</div>
@@ -77,6 +87,7 @@ const Team = () => {
 										linkedin: 'http://www.linkedin.com/in/kaan-%C5%9Firin-5732462ba',
 										github: 'https://github.com/KaanSirin',
 									}}
+									imageStyle={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
 								/>
 							</div>
 							<div className={styles.separatorSmall} />
@@ -88,6 +99,7 @@ const Team = () => {
 									socials={{
 										linkedin: 'https://www.linkedin.com/in/fazl%C4%B1-g%C3%B6ktu%C4%9F-y%C4%B1lmaz-79664a170/',
 									}}
+									imageStyle={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
 								/>
 							</div>
 							<div className={styles.separatorSmall} />
@@ -100,6 +112,7 @@ const Team = () => {
 										linkedin: 'https://www.linkedin.com/in/mehrdad-heshmat/',
 										github: 'https://github.com/MR-EIGHT',
 									}}
+									imageStyle={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
 								/>
 							</div>
 						</div>
@@ -113,6 +126,7 @@ const Team = () => {
 										linkedin: 'https://www.linkedin.com/in/ahmet-taha-kahya-614b78246/',
 										github: 'https://github.com/taha-kahya',
 									}}
+									imageStyle={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
 								/>
 							</div>
 						</div>
@@ -138,6 +152,7 @@ const Team = () => {
 										linkedin: 'https://www.linkedin.com/in/ay%C3%A7a-demir-08b1aa271/',
 										github: 'https://github.com/aycademir',
 									}}
+									imageStyle={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
 								/>
 							</div>
 							<div className={styles.separatorSmall} />
@@ -149,6 +164,7 @@ const Team = () => {
 									socials={{
 										github: 'https://github.com/batuhanbhc',
 									}}
+									imageStyle={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
 								/>
 							</div>
 							<div className={styles.separatorSmall} />
@@ -157,6 +173,7 @@ const Team = () => {
 									imageUrl=''
 									name='Doğukan Tosun'
 									title=''
+									imageStyle={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
 								/>
 							</div>
 						</div>
@@ -166,6 +183,7 @@ const Team = () => {
 									imageUrl='/images/people/yunuskerestecioglu.jpg'
 									name='Yunus Tan Kerestecioğlu'
 									titles={['Website']}
+									imageStyle={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
 								/>
 							</div>
 							<div className={styles.separatorSmall} />
@@ -173,6 +191,7 @@ const Team = () => {
 								<TeamMember
 									name='Melis Gemalmaz'
 									title=''
+									imageStyle={{ width: '150px', height: '150px', borderRadius: '50%', objectFit: 'cover' }}
 								/>
 							</div>
 						</div>
@@ -199,7 +218,7 @@ const Team = () => {
 								<img 
 									src={selectedMember.imageUrl} 
 									alt={selectedMember.name}
-									style={{ width: '200px', borderRadius: '10px' }}
+									style={{ width: '200px', height: '200px', borderRadius: '50%', objectFit: 'cover' }}
 								/>
 								<div>
 									<h3>{selectedMember.title}</h3>

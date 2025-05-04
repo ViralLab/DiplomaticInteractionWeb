@@ -1,0 +1,29 @@
+.tableWrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.fittedTable {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.fittedTable th,
+.fittedTable td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+  padding: 6px 8px !important;
+  font-size: 0.95em;
+}
+
+.paginationWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1em;
+}
+
+.cell {
+  font-size: 0.95em;
+} 
