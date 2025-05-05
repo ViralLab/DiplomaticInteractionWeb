@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import InteractionCartography from '@components/interactionCartography'
-import CountryDataModal from '@components/countryDataModal'
+import CountryDataModal from '@components/CountryDataModal'
 import CountryFlag from '@components/countryFlag'
 import styles from './worldMapScreen.module.css'
 import {

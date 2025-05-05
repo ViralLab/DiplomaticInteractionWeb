@@ -1,13 +1,3 @@
-.tableWrapper {
-  overflow-x: auto;
-  width: 100%;
-}
-
-.fittedTable {
-  table-layout: fixed;
-  width: 100%;
-}
-
 .fittedTable th,
 .fittedTable td {
   white-space: nowrap;
@@ -18,12 +8,28 @@
   font-size: 0.95em;
 }
 
-.paginationWrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: 1em;
+.workInProgressSegment {
+	display: flex !important;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 300px;
+	text-align: center;
+}
+
+.tableWrapper {
+	overflow-x: auto;
+}
+
+.fittedTable {
+	width: 100%;
 }
 
 .cell {
-  font-size: 0.95em;
-} 
+	padding: 8px !important;
+}
+
+.paginationWrapper {
+	margin-top: 1rem;
+	text-align: center;
+}
