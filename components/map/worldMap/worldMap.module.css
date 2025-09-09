@@ -1,0 +1,259 @@
+.mapContainer {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background: #FFFFFF;
+	display: flex;
+	flex-direction: column;
+}
+
+.mapContainer > div {
+	flex: 1;
+	width: 100%;
+	height: 100%;
+	min-height: 500px;
+}
+
+.mapContainer svg {
+	width: 100% !important;
+	height: 100% !important;
+	min-height: 500px;
+}
+
+.tooltip {
+	position: absolute !important;
+	top: 20px !important;
+	left: 20px !important;
+	background: rgba(255, 255, 255, 0.95) !important;
+	border: 1px solid #ddd !important;
+	border-radius: 12px !important;
+	padding: 16px 20px !important;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+	z-index: 1000 !important;
+	max-width: 320px !important;
+	max-height: 50px !important;
+	overflow: hidden !important;
+	backdrop-filter: blur(10px) !important;
+	animation: fadeInUp 0.3s ease-out !important;
+	border-left: 4px solid #667eea !important;
+	display: flex !important;
+	flex-direction: column !important;
+	justify-content: flex-start !important;
+}
+
+.tooltipHeader {
+	font-weight: 600;
+	font-size: 28px !important;
+	color: #333;
+	margin-bottom: 12px !important;
+	border-bottom: none !important;
+	padding-bottom: 0 !important;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.countryInfo {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.countryInfo img {
+	width: 24px;
+	height: 16px;
+}
+
+.countryName {
+	font-weight: 700;
+	color: #2c3e50;
+}
+
+.selectedBadge {
+	background: linear-gradient(135deg, #f39c12, #e67e22);
+	color: white;
+	padding: 4px 8px;
+	border-radius: 6px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.tooltipContent {
+	font-size: 20px !important;
+	color: #666;
+	margin: 0 !important;
+	padding: 0 !important;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.tooltipContent p {
+	margin: 0 !important;
+	padding: 0 !important;
+	line-height: 1.4 !important;
+	font-size: 16px !important;
+}
+
+.interactionCount {
+	font-weight: 500;
+	color: #34495e;
+	font-size: 18px;
+	margin-bottom: 4px;
+}
+
+.clickHint {
+	font-style: italic;
+	color: #7f8c8d;
+	font-size: 16px;
+	margin-top: 0;
+}
+
+.legend {
+	position: absolute;
+	bottom: 5px;
+	right: 5px;
+	background: rgba(255, 255, 255, 0.9);
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	padding: 4px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(5px);
+	z-index: 1000;
+	width: 60px;
+	height: auto;
+	max-height: 80px;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.legendTitle {
+	font-weight: 600;
+	font-size: 8px;
+	color: #333;
+	margin-bottom: 2px;
+	text-align: center;
+	border-bottom: 1px solid #eee;
+	padding-bottom: 2px;
+}
+
+.legendItems {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.legendItem {
+	display: flex;
+	align-items: center;
+	gap: 3px;
+	font-size: 7px;
+	color: #666;
+}
+
+.legendColor {
+	width: 8px;
+	height: 8px;
+	border-radius: 1px;
+	border: 1px solid #ddd;
+	box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+
+.mapControls {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 1000;
+}
+
+.controlButton {
+	background: rgba(255, 255, 255, 0.9);
+	border: 1px solid #ddd;
+	border-radius: 6px;
+	padding: 8px 12px;
+	font-size: 12px;
+	font-weight: 500;
+	color: #333;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	backdrop-filter: blur(10px);
+}
+
+.controlButton:hover {
+	background: rgba(255, 255, 255, 1);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	transform: translateY(-1px);
+}
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Enhanced hover effects for countries */
+.countryHover {
+	transition: all 0.2s ease-in-out;
+}
+
+.countryHover:hover {
+	transform: scale(1.02);
+	filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+	.mapContainer {
+		height: 70vh;
+	}
+	
+	.tooltip {
+		max-width: 220px;
+		font-size: 12px;
+		top: 10px;
+		left: 10px;
+		padding: 8px;
+		max-height: 25px !important;
+		height: 25px !important;
+		overflow: hidden;
+	}
+	
+	.legend {
+		bottom: 10px;
+		right: 10px;
+		padding: 12px;
+		min-width: 160px;
+	}
+	
+	.legendTitle {
+		font-size: 12px;
+	}
+	
+	.legendItem {
+		font-size: 11px;
+		gap: 8px;
+	}
+	
+	.legendColor {
+		width: 16px;
+		height: 16px;
+	}
+	
+	.mapControls {
+		top: 5px;
+		right: 5px;
+	}
+	
+	.controlButton {
+		padding: 6px 10px;
+		font-size: 11px;
+	}
+} 

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import Header from '@components/layout/header'
 import Content from '@components/layout/content'
+import MobileMessage from '@/components/utils/mobileMessage'
 import {
 	Menu,
 	MenuItem,
@@ -12,7 +13,7 @@ import {
 } from 'semantic-ui-react'
 import styles from './layout.module.css'
 import Link from 'next/link'
-import Footer from '@components/footer/index.js'
+import Footer from '@/components/layout/footer/index.js'
 const Layout = ({ app }) => {
 	const [visible, setVisible] = useState(false)
 	const toggleSidebar = () => setVisible(!visible)
@@ -21,6 +22,7 @@ const Layout = ({ app }) => {
 
 	return (
 		<SidebarPushable>
+			<MobileMessage />
 			<Sidebar
 				as={Menu}
 				animation='overlay'

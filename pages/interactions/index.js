@@ -1,5 +1,5 @@
 import React from 'react';
-import WorkInProgress from '@components/WorkInProgress';
+import WorkInProgress from '@/components/utils/workInProgress/WorkInProgress';
 import styles from './interactions.module.css';
 
 const Interactions = () => {

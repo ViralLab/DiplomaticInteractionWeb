@@ -3,7 +3,7 @@
     align-items: center;
     padding: 10px 30px 10px 30px;
     color: #fff;
-    background-color: #197878 !important;
+    background: linear-gradient(135deg, rgb(25, 120, 120) 0%, rgb(30, 130, 130) 50%, rgb(20, 110, 110) 100%) !important;
     font-size: 30px !important;
 }
 

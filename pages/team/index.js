@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import TeamMember from '@components/teamMember'
 import { Transition, Modal, Divider, Header, Icon } from 'semantic-ui-react'
 import styles from './team.module.css'
-import Footer from '../../components/footer'
+import Footer from '../../components/layout/footer'
 
 const Team = () => {
 	const [visible, setVisible] = useState(false)
