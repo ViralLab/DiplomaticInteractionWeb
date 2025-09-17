@@ -9,8 +9,6 @@ import {
 	Icon,
 } from 'semantic-ui-react'
 
-import interactions from '../../../data/mentions'
-
 const WorldMapScreen = () => {
 	const [visible, setVisible] = useState(false)
 	const [filters, setFilters] = useState({
@@ -18,7 +16,7 @@ const WorldMapScreen = () => {
 		conversationType: { show: false, subFilters: [] },
 		topic: { show: false, subFilters: [] },
 		year: { show: false, subFilters: [] },
-		reporter: { show: false, subFilters: [] },
+		reporting: { show: false, subFilters: [] },
 	})
 
 	const [country, setCountry] = useState('')
@@ -28,26 +26,26 @@ const WorldMapScreen = () => {
 	const [activeTab, setActiveTab] = useState('mentions')
 	const [showMapInfo, setShowMapInfo] = useState(true)
 
-	function handleDataFilter(data) {
-		let filteredData = data.interactions || []
-		
-		// Filter by tab selection first
-		if (activeTab === 'mentions') {
-			filteredData = filteredData.filter((item) => {
-				return item['type'] === 'mention'
-			})
-		} else if (activeTab === 'interactions') {
-			// For interactions tab, return empty array since we don't have interaction data yet
-			return []
+	const fetchData = async () => {
+		setLoading(true)
+		try {
+			const response = await fetch('/api/mentions?overview=true')
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`)
+			}
+			const mentionsData = await response.json()
+			// Pass the complete data structure, not just interactions
+			setFilteredData(mentionsData)
+		} catch (error) {
+			console.error('Error fetching data:', error)
+			setFilteredData(null)
+		} finally {
+			setLoading(false)
 		}
-	
-		return filteredData
 	}
 	
 	useEffect(() => {
-		const filteredData = handleDataFilter(interactions)
-		setFilteredData(filteredData)
-		setLoading(false)
+		fetchData()
 	}, [activeTab])
 	return (
 		<SidebarPushable>
@@ -103,17 +101,15 @@ const WorldMapScreen = () => {
 								onCountryClick={(countryData) => {
 									if (countryData && countryData.name) {
 										// Set the clicked country and open modal
-										setCountry(countryData.name)
+										setCountry(countryData)
 										setModalOpen(true)
 									}
 								}}
-								cartographyData={filteredData}
-								countries={filters.reporter.subFilters}
-								interactionData={interactions}
+								interactionData={filteredData}
 							/>
 							{modalOpen && country && (
 								<CountryDataModal
-									country={{ title: country }}
+									country={country}
 									modalOpen={modalOpen}
 									onModalClose={() => setModalOpen(false)}
 								/>
@@ -121,7 +117,7 @@ const WorldMapScreen = () => {
 							{showMapInfo && (
 								<div className={styles.mapInfoBox}>
 									<Icon name='info circle' />
-									<span>This map shows diplomatic interactions and mentions between countries. Use the filter sidebar to explore specific data.</span>
+									<span>Click any country to view their diplomatic interactions and mentions.</span>
 									<Icon 
 										name='close' 
 										className={styles.closeIcon}
@@ -130,30 +126,17 @@ const WorldMapScreen = () => {
 								</div>
 							)}
 							<div className={styles.mapLegend}>
-								<div className={styles.legendTitle}># of Mentions</div>
+								<div className={styles.legendTitle}>Interactive Map</div>
 								<div className={styles.legendItem}>
-									<div className={styles.legendDot} style={{backgroundColor: '#003366'}}></div>
-									<span>1000+</span>
+									<div className={styles.legendDot} style={{backgroundColor: '#FFD700'}}></div>
+									<span>Selected Country</span>
 								</div>
 								<div className={styles.legendItem}>
-									<div className={styles.legendDot} style={{backgroundColor: '#0052CC'}}></div>
-									<span>501-1000</span>
+									<div className={styles.legendDot} style={{backgroundColor: '#E8E8E8'}}></div>
+									<span>Clickable Countries</span>
 								</div>
-								<div className={styles.legendItem}>
-									<div className={styles.legendDot} style={{backgroundColor: '#1A8CFF'}}></div>
-									<span>101-500</span>
-								</div>
-								<div className={styles.legendItem}>
-									<div className={styles.legendDot} style={{backgroundColor: '#66B2FF'}}></div>
-									<span>26-100</span>
-								</div>
-								<div className={styles.legendItem}>
-									<div className={styles.legendDot} style={{backgroundColor: '#B3D9FF'}}></div>
-									<span>1-25</span>
-								</div>
-								<div className={styles.legendItem}>
-									<div className={styles.legendDot} style={{backgroundColor: '#F0F0F0'}}></div>
-									<span>No Mentions</span>
+								<div className={styles.legendNote}>
+									Click any country to view their diplomatic interactions
 								</div>
 							</div>
 						</div>

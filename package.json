@@ -1,36 +1,36 @@
 {
-  "name": "diplomatic_interactions_js",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "static": "rm -rf .next out && next build && touch ./out/.nojekyll && echo 'www.globaldiplomacy.net' > ./out/CNAME",
-    "deploy": "gh-pages -d out --dotfiles"
-  },
-  "dependencies": {
-    "@deck.gl/core": "^8.9.36",
-    "@deck.gl/layers": "^8.9.36",
-    "@deck.gl/react": "^8.9.36",
-    "babel-loader": "^10.0.0",
-    "chart.js": "^4.4.3",
-    "deck.gl": "^8.9.36",
-    "mapbox-gl": "^2.15.0",
-    "next": "14.2.3",
-    "react": "^18",
-    "react-chartjs-2": "^5.2.0",
-    "react-country-flag": "^3.1.0",
-    "react-dom": "^18",
-    "react-graph-vis": "^1.0.7",
-    "react-map-gl": "^7.1.9",
-    "react-simple-maps": "^3.0.0",
-    "semantic-ui-css": "^2.5.0",
-    "semantic-ui-react": "^2.1.5"
-  },
-  "devDependencies": {
-    "gh-pages": "^6.3.0"
-  },
-  "homepage": "https://ViralLab.github.io/DiplomaticInteractionWeb"
+    "name": "diplomatic_interactions_js",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "lint": "next lint",
+        "static": "rm -rf .next out && next build && touch ./out/.nojekyll && echo 'www.globaldiplomacy.net' > ./out/CNAME",
+        "deploy": "gh-pages -d out --dotfiles"
+    },
+    "dependencies": {
+        "@deck.gl/core": "^8.9.36",
+        "@deck.gl/layers": "^8.9.36",
+        "@deck.gl/react": "^8.9.36",
+        "babel-loader": "^10.0.0",
+        "chart.js": "^4.4.3",
+        "deck.gl": "^8.9.36",
+        "firebase": "^12.2.1",
+        "mapbox-gl": "^2.15.0",
+        "next": "14.2.3",
+        "react": "^18",
+        "react-chartjs-2": "^5.2.0",
+        "react-country-flag": "^3.1.0",
+        "react-dom": "^18",
+        "react-graph-vis": "^1.0.7",
+        "react-map-gl": "^7.1.9",
+        "react-simple-maps": "^3.0.0",
+        "semantic-ui-css": "^2.5.0",
+        "semantic-ui-react": "^2.1.5"
+    },
+    "devDependencies": {
+        "gh-pages": "^6.3.0"
+    }
 }

@@ -71,7 +71,7 @@ const LandingScreen = ({ onScroll }) => {
 						</div>
 						<div className={landingScreenStyles.cardBox}>
 							<LandingIcon icon='globe' />
-							<p>Interactions mapped globally by extraction mentions of countries and politicians.</p>
+							<p>Interactions mapped globally through the mentions of countries and politicians.</p>
 						</div>
 						<div className={landingScreenStyles.cardBox}>
 							<LandingIcon icon='map outline' />

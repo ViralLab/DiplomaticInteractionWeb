@@ -6,13 +6,12 @@ import CountryFlag from '@/components/countries/countryFlag'
 const WorldMap = ({
 	onCountryHover = () => {},
 	onCountryClick = () => {},
-	cartographyData = [],
-	countries = [],
 	interactionData = null
 }) => {
 	const [hoveredCountry, setHoveredCountry] = useState(null)
 	const [selectedCountry, setSelectedCountry] = useState(null)
 	const [mapPosition, setMapPosition] = useState({ x: 0, y: 0, zoom: 1.2 })
+	const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
 
 	// Calculate interaction count for each country
 	const getInteractionCount = useCallback((countryId, data) => {
@@ -58,40 +57,45 @@ const WorldMap = ({
 		const countryName = geo.properties.name
 		const countryData = countryInteractionMap[countryName]
 		
+		// Make all countries clickable, even if they don't have data
 		if (countryData) {
 			setSelectedCountry(countryData.name)
-			// Pass the country data to the parent component for modal
 			onCountryClick(countryData)
+		} else {
+			// For countries not in our data, create a basic country object
+			const isoCode = geo.properties.ISO_A2 || geo.properties.ISO_A3 || ''
+			console.log('Creating basic country data for:', countryName, 'ISO code:', isoCode)
+			const basicCountryData = {
+				name: countryName,
+				code: isoCode,
+				interactionCount: 0,
+				isSelected: true
+			}
+			setSelectedCountry(countryName)
+			onCountryClick(basicCountryData)
 		}
 	}, [countryInteractionMap, onCountryClick])
 
 	const getCountryColor = useCallback((countryName) => {
 		const countryData = countryInteractionMap[countryName]
-		if (!countryData) return '#E8E8E8' // Default color for countries without data
 		
-		if (countryData.isSelected) return '#FFD700'
-		if (countryData.interactionCount === 0) return '#F0F0F0'
+		// Selected country gets golden color
+		if (countryData?.isSelected) return '#FFD700'
 		
-		// Enhanced color scale based on interaction count
-		if (countryData.interactionCount <= 25) return '#B3D9FF'
-		if (countryData.interactionCount <= 100) return '#66B2FF'
-		if (countryData.interactionCount <= 500) return '#1A8CFF'
-		if (countryData.interactionCount <= 1000) return '#0052CC'
-		return '#003366'
+		// Default color for all countries (clickable)
+		return '#E8E8E8'
 	}, [countryInteractionMap])
 
 	const getCountryStrokeColor = useCallback((countryName) => {
 		const countryData = countryInteractionMap[countryName]
 		if (countryData?.isSelected) return '#FF8C00'
-		if (countryData?.interactionCount > 0) return '#FFFFFF'
-		return '#CCCCCC'
+		return '#CCCCCC' // Default stroke for all countries
 	}, [countryInteractionMap])
 
 	const getCountryStrokeWidth = useCallback((countryName) => {
 		const countryData = countryInteractionMap[countryName]
 		if (countryData?.isSelected) return 2.5
-		if (countryData?.interactionCount > 0) return 1
-		return 0.5
+		return 1 // Default stroke width for all countries
 	}, [countryInteractionMap])
 
 	// Gentle boundary check - only prevents extreme scrolling

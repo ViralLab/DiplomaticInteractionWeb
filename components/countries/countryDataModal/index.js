@@ -9,12 +9,14 @@ import {
 	Icon,
 } from 'semantic-ui-react'
 import styles from './countryDataModal.module.css'
-import interactionData from '../../../data/mentions.json'
+import countries from '../../../data/countries.js'
 
 const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
 	const [activePage, setActivePage] = useState(1)
-	const [sortField, setSortField] = useState('year')
+	const [sortField, setSortField] = useState('date')
 	const [sortDirection, setSortDirection] = useState('desc')
+	const [mentionsData, setMentionsData] = useState(null)
+	const [loading, setLoading] = useState(false)
 	const itemsPerPage = 8
 
 	// Get country name from either title or name property
@@ -22,56 +24,75 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
 
 	useEffect(() => {
 		setActivePage(1)
-		setSortField('year')
+		setSortField('date')
 		setSortDirection('desc')
 	}, [modalOpen])
 
-	// Get mentions for the current country
-	const getMentionsForCountry = (countryName) => {
-			console.log('Getting mentions for country:', countryName)
-			console.log('Available countries:', interactionData.countries.map(c => c.name))
+	// Fetch country-specific data when modal opens
+	useEffect(() => {
+		if (modalOpen && countryName) {
+			fetchCountryData()
+		}
+	}, [modalOpen, countryName])
 
-			// Find the country code from the countries data
-			const countryFromData = interactionData.countries.find(c => c.name === countryName)
-			if (!countryFromData) {
-				console.log('Country not found in interaction data:', countryName)
-				return []
+	const fetchCountryData = async () => {
+		setLoading(true)
+		try {
+			// Use country code directly if available, otherwise map from name
+			// Handle both 'code' and 'countryCode' properties
+			const countryCode = country?.code || country?.countryCode || getCountryCodeFromName(countryName)
+			
+			if (!countryCode) {
+				setMentionsData(null)
+				return
 			}
-			
-			const countryId = countryFromData.id
-			console.log('Country ID:', countryId)
-			
-			const countryIndex = interactionData.index.byCountry[countryId]
-			if (!countryIndex) {
-				console.log('Country index not found for ID:', countryId)
-				return []
+
+			const apiUrl = `${window.location.origin}/api/country/${countryCode}?limit=1000`			
+			const response = await fetch(apiUrl)
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`)
 			}
-			
-			console.log('Country index found:', countryIndex)
-			
-			const allInteractionIds = [...countryIndex.asReporter, ...countryIndex.asReported]
-			console.log('All interaction IDs:', allInteractionIds)
-			
-			const interactions = allInteractionIds.map(id => {
-				const interaction = interactionData.interactions.find(i => i.id === id)
-				if (!interaction) return null
-				
-				const reporter = interactionData.countries.find(c => c.id === interaction.reporting)
-				const reported = interactionData.countries.find(c => c.id === interaction.reported)
-				
-				return {
-					id: interaction.id,
-					reporter: reporter?.name || 'Unknown',
-					reported: reported?.name || 'Unknown',
-					date: interaction.date,
-					year: new Date(interaction.date).getFullYear(),
-					type: interaction.type,
-					isReporter: countryIndex.asReporter.includes(id)
-				}
-			}).filter(Boolean)
-			
-			console.log('Processed interactions:', interactions)
-			
+			const data = await response.json()
+			setMentionsData(data)
+		} catch (error) {
+			console.error('=== CLIENT FETCH ERROR ===')
+			console.error('Error fetching country data:', error)
+			setMentionsData(null)
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	const getCountryCodeFromName = (name) => {
+		// Use the countries.js file to find country code
+		const country = countries.find(c => 
+			c.name.toLowerCase() === name.toLowerCase() ||
+			c.name.toLowerCase().includes(name.toLowerCase()) ||
+			name.toLowerCase().includes(c.name.toLowerCase())
+		)
+		return country ? country.countryCode : null
+	}
+
+	// Get mentions for the current country
+	const getMentionsForCountry = () => {
+		if (!mentionsData || !mentionsData.data) {
+			return []
+		}
+
+
+		// The API already returns enriched data with country names
+		const interactions = mentionsData.data.map(interaction => ({
+			id: interaction.id,
+			reporter: interaction.reporterName || 'Unknown',
+			reported: interaction.reportedName || 'Unknown',
+			date: interaction.date,
+			year: new Date(interaction.date).getFullYear(),
+			type: interaction.type,
+			isReporter: interaction.reporterCode === getCountryCodeFromName(countryName)
+		}))
+
+
 			// Aggregate by reporter, reported, year, and type for more granular grouping
 			const aggregatedData = {}
 			interactions.forEach(interaction => {
@@ -98,7 +119,6 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
 				return b.year - a.year || a.reporter.localeCompare(b.reporter)
 			})
 			
-			console.log('Final aggregated result:', result)
 			return result
 		}
 
@@ -112,11 +132,7 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
 		setActivePage(1)
 	}
 
-
-	console.log('Modal country data:', country)
-	console.log('Using country name:', countryName)
-	
-	const mentions = getMentionsForCountry(countryName)
+	const mentions = getMentionsForCountry()
 	const indexOfLastItem = activePage * itemsPerPage
 	const indexOfFirstItem = indexOfLastItem - itemsPerPage
 	const currentItems = mentions.slice(indexOfFirstItem, indexOfLastItem)
@@ -137,7 +153,17 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
 
 	const mentionsTab = (
 		<Tab.Pane>
-			{mentions.length > 0 ? (
+			{loading ? (
+				<Segment placeholder className={styles.workInProgressSegment}>
+					<Header icon textAlign="center">
+						<Icon name="spinner" loading size="big" />
+						Loading Data
+						<Header.Subheader>
+							Fetching mentions data for {countryName}...
+						</Header.Subheader>
+					</Header>
+				</Segment>
+			) : mentions.length > 0 ? (
 				<>
 					<div className={styles.tableWrapper}>
 						<div className={styles.tableHeader}></div>

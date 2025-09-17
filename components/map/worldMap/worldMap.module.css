@@ -32,11 +32,11 @@
 	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
 	z-index: 1000 !important;
 	max-width: 320px !important;
-	max-height: 50px !important;
-	overflow: hidden !important;
+	max-height: none !important;
+	overflow: visible !important;
 	backdrop-filter: blur(10px) !important;
 	animation: fadeInUp 0.3s ease-out !important;
-	border-left: 4px solid #667eea !important;
+	border-left: 4px solid rgb(25, 120, 120) !important;
 	display: flex !important;
 	flex-direction: column !important;
 	justify-content: flex-start !important;

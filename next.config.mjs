@@ -1,12 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
   reactStrictMode: true,
   images: {
     unoptimized: true,
   },
-  distDir: '.next',
-  trailingSlash: true,
   webpack: (config, { isServer }) => {
     // Handle ES modules compatibility
     config.resolve.fallback = {
