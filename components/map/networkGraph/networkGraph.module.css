@@ -1,0 +1,256 @@
+.networkContainer {
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.networkDropdown {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+}
+
+.networkDropdown .ui.dropdown {
+  background: #fff;
+  border: 1px solid rgb(25, 120, 120);
+  border-radius: 4px;
+  min-width: 150px;
+}
+
+.networkDropdown .ui.dropdown .search {
+  padding-left: 5px
+}
+
+.networkDropdown .ui.dropdown:hover {
+  background: rgb(25, 120, 120);
+  color: white;
+}
+
+.networkDropdown .ui.dropdown .menu {
+  border: 1px solid rgb(25, 120, 120);
+  border-radius: 4px;
+}
+
+.networkDropdown .ui.dropdown .menu .item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Loading indicator */
+.loadingIndicator {
+  position: absolute;
+  top: 60px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid rgb(25, 120, 120);
+  font-size: 12px;
+  color: rgb(25, 120, 120);
+  z-index: 1000;
+}
+
+/* Country info display */
+.countryInfo {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgb(25, 120, 120);
+  box-shadow: 0 2px 8px rgba(25, 120, 120, 0.1);
+  z-index: 1000;
+  min-width: 200px;
+}
+
+.countryInfo h3 {
+  margin: 0 0 8px 0;
+  color: rgb(25, 120, 120);
+  font-size: 14px;
+}
+
+.countryInfo p {
+  margin: 4px 0;
+  font-size: 12px;
+  color: #666;
+}
+
+/* Custom node styles */
+.react-flow__node {
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 50% !important;
+  background: llinear-gradient(135deg, rgb(25, 120, 120) 0%, rgb(30, 130, 130) 50%, rgb(20, 110, 110) 100%);
+  color: white !important;
+  border: 2px solid rgb(26, 51, 51) !important;
+  box-shadow: 0 2px 8px rgba(25, 120, 120, 0.2) !important;
+}
+
+.react-flow__node:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(25, 120, 120, 0.4) !important;
+  border-color: rgb(20, 110, 110) !important;
+}
+
+.react-flow__node.selected {
+  box-shadow: 0 0 0 3px rgba(25, 120, 120, 0.6) !important;
+  border-color: rgb(20, 110, 110) !important;
+}
+
+/* Custom edge styles */
+
+
+
+
+
+/* Controls styling */
+.react-flow__controls {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgb(25, 120, 120);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(25, 120, 120, 0.1);
+}
+
+.react-flow__controls-button {
+  background: #fff;
+  border: none;
+  color: rgb(25, 120, 120);
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.react-flow__controls-button:hover {
+  background: rgb(25, 120, 120);
+  color: white;
+}
+
+/* MiniMap styling */
+.react-flow__minimap {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgb(25, 120, 120);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(25, 120, 120, 0.1);
+}
+
+/* Background styling */
+.react-flow__background {
+  background-color: #f8f9fa;
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(25, 120, 120, 0.1) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+/* Attribution styling */
+.react-flow__attribution {
+  background: rgba(255, 255, 255, 0.9);
+  color: rgb(25, 120, 120);
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(25, 120, 120, 0.2);
+}
+
+/* Custom Country Node Styles */
+.countryNode {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgb(25, 120, 120) 0%, rgb(30, 130, 130) 100%);
+  border: 2px solid rgb(25, 120, 120);
+  border-radius: 12px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 8px rgba(25, 120, 120, 0.2);
+  min-width: 120px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+/* Center Node Styles */
+.centerNode {
+  background: linear-gradient(135deg, rgb(225, 200, 109) 0%, rgb(249, 104, 8) 100%) !important;
+  border: 3px solid rgb(141, 94, 41) !important;
+  box-shadow: 0 4px 16px rgba(5, 1, 3, 0.4) !important;
+  transform: scale(1.1);
+}
+
+.countryNode:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(25, 120, 120, 0.4);
+  border-color: rgb(20, 110, 110);
+}
+
+.centerNode:hover {
+  transform: scale(1.15) !important;
+  box-shadow: 0 6px 20px rgba(67, 20, 4, 0.6) !important;
+  border-color: rgb(141, 94, 41) !important;
+}
+
+.countryFlag {
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.countryFlag svg {
+  width: 24px;
+  height: 18px;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.countryName {
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+}
+
+/* Mobile responsiveness */
+@media screen and (max-width: 768px) {
+  .networkContainer {
+    min-height: 400px;
+  }
+  
+  .react-flow__node {
+    font-size: 10px;
+    width: 60px !important;
+    height: 60px !important;
+  }
+  
+  .react-flow__controls {
+    transform: scale(0.8);
+  }
+  
+  .react-flow__minimap {
+    transform: scale(0.7);
+  }
+  
+  .countryNode {
+    min-width: 100px;
+    padding: 6px 10px;
+  }
+  
+  .countryFlag svg {
+    width: 20px;
+    height: 15px;
+  }
+  
+  .countryName {
+    font-size: 10px;
+    max-width: 70px;
+  }
+}

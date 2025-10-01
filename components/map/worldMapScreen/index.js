@@ -8,6 +8,7 @@ import {
 	SidebarPusher,
 	Icon,
 } from 'semantic-ui-react'
+import NetworkGraph from '../networkGraph'
 
 const WorldMapScreen = () => {
 	const [visible, setVisible] = useState(false)
@@ -69,9 +70,10 @@ const WorldMapScreen = () => {
 								Cartography
 							</Button>
 							<Button
-								disabled
-								title="Work in Progress"
-								className={`${styles.disabledButton} ${styles.mapButton}`}
+								primary={activeTab === 'network'}
+								basic={activeTab !== 'network'}
+								onClick={() => setActiveTab('network')}
+								className= '${styles.mapButton}'
 							>
 								<Icon name='sitemap' />
 								Network
@@ -90,6 +92,7 @@ const WorldMapScreen = () => {
 					{loading ? (
 						<div>Loading...</div>
 					) : (
+						(activeTab === 'mentions' ? (
 						<div className={styles.mapContainer}>
 							<WorldMap
 								onCountryHover={(countryData) => {
@@ -133,6 +136,11 @@ const WorldMapScreen = () => {
 								</div>
 							</div>
 						</div>
+						) : (
+							
+						<NetworkGraph/>
+							
+						))
 					)}
 				</div>
 			</SidebarPusher>
