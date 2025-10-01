@@ -1,0 +1,385 @@
+/* Main container */
+.contentContainer {
+  min-height: 100vh;
+  padding: 2rem;
+  background: linear-gradient(135deg, #dee3e3 0%, #4aa89d 100%);
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header section */
+.headerSection {
+  margin-bottom: 2rem;
+}
+
+.backButton {
+  margin-bottom: 2rem !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  color: #2c3e50 !important;
+  border-radius: 25px !important;
+  padding: 0.75rem 1.5rem !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.backButton:hover {
+  background: white !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.countryHeader {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.countryFlagContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(74, 168, 157, 0.1);
+  padding: 1rem;
+  flex-shrink: 0;
+}
+
+.countryInfo {
+  flex: 1;
+}
+
+.countryName {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.countryCode {
+  color: #639093;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.interactionStats {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4aa89d;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.interactionStats .icon {
+  font-size: 1rem;
+}
+
+/* Content section */
+.contentSection {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+/* Tabs styling */
+.tabs {
+  margin: 0 !important;
+}
+
+.tabs .ui.menu {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  margin-bottom: 2rem !important;
+}
+
+.tabs .ui.menu .item {
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 10px 10px 0 0 !important;
+  background: #f8f9fa !important;
+  color: #7f8c8d !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+  margin-right: 0.5rem !important;
+}
+
+.tabs .ui.menu .item:hover {
+  background: #e9ecef !important;
+  color: #4aa89d !important;
+  border-color: #4aa89d !important;
+}
+
+.tabs .ui.menu .item.active {
+  background: white !important;
+  color: #2c3e50 !important;
+  border-color: #4aa89d !important;
+  border-bottom-color: white !important;
+  font-weight: 600 !important;
+}
+
+/* Table styling */
+.tableWrapper {
+  margin-bottom: 2rem;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.fittedTable {
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 15px !important;
+  overflow: hidden !important;
+}
+
+.fittedTable .ui.table thead th {
+  background: linear-gradient(135deg, #4aa89d 0%, #5bb8ad 100%) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  padding: 1rem !important;
+  border: none !important;
+}
+
+.fittedTable .ui.table tbody td {
+  padding: 0.75rem 1rem !important;
+  text-align: center !important;
+  border-color: #f0f0f0 !important;
+  vertical-align: middle !important;
+}
+
+.fittedTable .ui.table tbody tr:hover {
+  background: rgba(74, 168, 157, 0.05) !important;
+}
+
+.sortableHeader {
+  cursor: pointer !important;
+  user-select: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.sortableHeader:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.sortIcon {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.sortIcon.active {
+  color: #fff !important;
+}
+
+.sortIcon.inactive {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.cell {
+  font-weight: 500 !important;
+  color: #2c3e50 !important;
+}
+
+/* Pagination styling */
+.paginationWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.paginationInfo {
+  color: #639093;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.singlePageNote {
+  color: #bdc3c7;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+.paginationWrapper .ui.pagination.menu {
+  border: 2px solid #e0e0e0 !important;
+  border-radius: 25px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+  background: white !important;
+}
+
+.paginationWrapper .ui.pagination.menu .item {
+  border: none !important;
+  background: transparent !important;
+  color: #7f8c8d !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.paginationWrapper .ui.pagination.menu .item:hover {
+  background: rgba(74, 168, 157, 0.1) !important;
+  color: #4aa89d !important;
+}
+
+.paginationWrapper .ui.pagination.menu .item.active {
+  background: #4aa89d !important;
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+/* Loading and empty states */
+.loadingSegment,
+.noDataSegment,
+.workInProgressSegment {
+  padding: 4rem 2rem !important;
+  background: #f8f9fa !important;
+  border: 2px dashed #e0e0e0 !important;
+  border-radius: 15px !important;
+  text-align: center !important;
+}
+
+.loadingSegment .header,
+.noDataSegment .header,
+.workInProgressSegment .header {
+  color: #7f8c8d !important;
+}
+
+.loadingSegment .header .icon,
+.noDataSegment .header .icon,
+.workInProgressSegment .header .icon {
+  color: #4aa89d !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .contentContainer {
+    padding: 1.5rem;
+  }
+  
+  .countryName {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .contentContainer {
+    padding: 1rem;
+  }
+  
+  .countryHeader {
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+  
+  .countryName {
+    font-size: 2rem;
+  }
+  
+  .contentSection {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contentContainer {
+    padding: 0.75rem;
+  }
+  
+  .countryHeader {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.5rem;
+    gap: 1rem;
+  }
+  
+  .countryFlagContainer {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .countryName {
+    font-size: 1.8rem;
+  }
+  
+  .countryCode {
+    font-size: 1rem;
+  }
+  
+  .interactionStats {
+    font-size: 1rem;
+  }
+  
+  .contentSection {
+    padding: 1rem;
+    border-radius: 15px;
+  }
+  
+  .fittedTable .ui.table thead th {
+    padding: 0.75rem 0.5rem !important;
+    font-size: 0.9rem !important;
+  }
+  
+  .fittedTable .ui.table tbody td {
+    padding: 0.5rem !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentContainer {
+    padding: 0.5rem;
+  }
+  
+  .countryHeader {
+    padding: 1rem;
+  }
+  
+  .countryName {
+    font-size: 1.5rem;
+  }
+  
+  .countryCode {
+    font-size: 0.9rem;
+  }
+  
+  .interactionStats {
+    font-size: 0.9rem;
+  }
+  
+  .contentSection {
+    padding: 0.75rem;
+    border-radius: 10px;
+  }
+  
+  .fittedTable .ui.table thead th {
+    padding: 0.5rem 0.25rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .fittedTable .ui.table tbody td {
+    padding: 0.4rem 0.25rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .backButton {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.9rem !important;
+  }
+}

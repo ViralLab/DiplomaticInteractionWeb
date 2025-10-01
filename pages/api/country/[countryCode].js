@@ -14,10 +14,6 @@ async function handleGet(req, res) {
     const { countryCode } = req.query
     const { limit = 50, offset = 0 } = req.query
     
-    console.log('=== DYNAMIC API CALL START ===')
-    console.log('Requested country code:', countryCode)
-    console.log('Query params:', req.query)
-    
     if (!countryCode) {
       return res.status(400).json({ error: 'Country code is required' })
     }
@@ -25,11 +21,9 @@ async function handleGet(req, res) {
     // Get countries to find the country name
     const countries = await mentionsService.getCountries()
 
-    console.log('Countries:', countries)
     const country = countries.find(c => c.code === countryCode)
     
     if (!country) {
-      console.log('Country not found in dataset, returning empty data')
       return res.status(200).json({
         country: countryCode,
         countryName: countryCode,
@@ -40,16 +34,12 @@ async function handleGet(req, res) {
       })
     }
     
-    console.log('Found country:', country)
-    
     // Get interactions for this country from Firebase
     const result = await mentionsService.getInteractionsForCountry(
       countryCode, 
       parseInt(limit), 
       parseInt(offset)
     )
-    
-    console.log('Firebase interactions count:', result.data.length)
     
     // Enrich data with country names
     const enrichedData = result.data.map(interaction => ({
@@ -72,10 +62,6 @@ async function handleGet(req, res) {
       },
       filters: {}
     }
-    
-    console.log('=== DYNAMIC API RESPONSE ===')
-    console.log('Response data count:', enrichedData.length)
-    console.log('Response:', JSON.stringify(response, null, 2))
     
     // Set cache headers
     res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
