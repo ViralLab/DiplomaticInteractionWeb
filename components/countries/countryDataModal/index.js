@@ -22,11 +22,14 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
   const [error, setError] = useState(null)
 
   const [pageMeta, setPageMeta] = useState({
-    limit: 20, // rows per page
+    limit: 20,
     offset: 0,
     total: 0,
     hasMore: false,
   })
+
+  // cache to store fetched pages
+  const [pageCache, setPageCache] = useState({})
 
   const countryName = country?.title || country?.name || ''
 
@@ -34,6 +37,7 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
     setActivePage(1)
     setSortField('date')
     setSortDirection('desc')
+    setPageCache({})
   }, [modalOpen])
 
   useEffect(() => {
@@ -59,15 +63,26 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
   const resolveCountryCode = () =>
     country?.code || country?.countryCode || getCountryCodeFromName(countryName)
 
-  const fetchPage = async (page = 1) => {
+  const fetchPage = async (page = 1, prefetch = false) => {
     const countryCode = resolveCountryCode()
     if (!countryCode) {
       setError('Country code could not be resolved.')
       return
     }
 
-    setLoading(true)
+    // if cached already
+    if (pageCache[page]) {
+      if (!prefetch) {
+        setInteractions(pageCache[page].data)
+        setPageMeta(pageCache[page].pageMeta)
+        setActivePage(page)
+      }
+      return
+    }
+
+    if (!prefetch) setLoading(true)
     setError(null)
+
     try {
       const limit = pageMeta.limit || 20
       const offset = (page - 1) * limit
@@ -76,21 +91,46 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = await res.json()
 
-      setInteractions(data?.data || [])
-      setPageMeta({
+      const newPageMeta = {
         limit: data?.pagination?.limit ?? limit,
         offset,
         total: data?.pagination?.total ?? 0,
         hasMore: data?.pagination?.hasMore ?? false,
-      })
-      setActivePage(page)
+      }
+
+      // store in cache
+      setPageCache(prev => ({
+        ...prev,
+        [page]: { data: data?.data || [], pageMeta: newPageMeta }
+      }))
+
+      if (!prefetch) {
+        setInteractions(data?.data || [])
+        setPageMeta(newPageMeta)
+        setActivePage(page)
+      }
     } catch (e) {
-      console.error('Failed to fetch country data:', e)
-      setError('Failed to fetch data. Please try again.')
+      if (!prefetch) {
+        console.error('Failed to fetch country data:', e)
+        setError('Failed to fetch data. Please try again.')
+      }
     } finally {
-      setLoading(false)
+      if (!prefetch) setLoading(false)
     }
   }
+
+  // prefetch next 3 pages in background
+  useEffect(() => {
+    if (activePage > 0 && pageMeta.total > 0) {
+      for (let i = 1; i <= 3; i++) {
+        const nextPage = activePage + i
+        const totalPages = Math.ceil(pageMeta.total / (pageMeta.limit || 20))
+        if (nextPage <= totalPages && !pageCache[nextPage]) {
+          fetchPage(nextPage, true) // background fetch
+        }
+      }
+    }
+  }, [activePage, pageMeta.total])
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -101,7 +141,6 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
     }
   }
 
-  // client-side sort of the current page
   const sortedInteractions = [...interactions].sort((a, b) => {
     if (sortField === 'date') {
       const ad = new Date(a.date)
@@ -173,21 +212,21 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
                         : '↕'}
                     </span>
                   </Table.HeaderCell>
-                  {/* Type column header with Work in Progress note */}
-                  <Table.HeaderCell>Type (Work in Progress)</Table.HeaderCell>
+                  <Table.HeaderCell style={{ color: '#999', fontWeight: 'normal' }}>
+                    Type (Work in Progress)
+                  </Table.HeaderCell>
                 </Table.Row>
               </Table.Header>
-			  <Table.Body>
-				{sortedInteractions.map((item) => (
-					<Table.Row key={item.id}>
-						<Table.Cell>{item.reporterName|| 'Unknown'}</Table.Cell>
-						<Table.Cell>{item.reportedName || 'Unknown'}</Table.Cell>
-						<Table.Cell>{item.date || 'Unknown'}</Table.Cell>
-						{/* Show dash until type is available */}
-						<Table.Cell>-</Table.Cell>
-					</Table.Row>
-				))}
-			  </Table.Body>
+              <Table.Body>
+                {sortedInteractions.map((item) => (
+                  <Table.Row key={item.id}>
+                    <Table.Cell>{item.reporterName || 'Unknown'}</Table.Cell>
+                    <Table.Cell>{item.reportedName || 'Unknown'}</Table.Cell>
+                    <Table.Cell>{item.date || 'Unknown'}</Table.Cell>
+                    <Table.Cell>-</Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
             </Table>
           </div>
 
