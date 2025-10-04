@@ -12,7 +12,6 @@ import NetworkGraph from '../networkGraph'
 import { mentionsService } from '@/lib/firebase'
 
 const WorldMapScreen = () => {
-	const [visible, setVisible] = useState(false)
 	const [country, setCountry] = useState(null)
 	const [modalOpen, setModalOpen] = useState(false)
 	const [loading, setLoading] = useState(false)

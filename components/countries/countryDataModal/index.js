@@ -48,7 +48,6 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
       setError(null)
       fetchPage(1) // load first page
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalOpen, countryName])
 
   const getCountryCodeFromName = (name) => {

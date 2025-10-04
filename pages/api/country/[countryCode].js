@@ -19,11 +19,9 @@ async function handleGet(req, res) {
       return res.status(400).json({ error: 'Country code is required' })
     }
     
-    // 🔍 Match on both `countryCode` and `code` fields
     const country = countriesData.find(
       c => c.countryCode === countryCode || c.code === countryCode
     );    
-    console.log('country', country)
     
     if (!country) {
       return res.status(200).json({
@@ -36,7 +34,6 @@ async function handleGet(req, res) {
       })
     }
     
-    // 🔑 Get interactions for this country from Firebase
     const result = await mentionsService.getInteractionsForCountry(
       countryCode, 
       parseInt(limit), 
@@ -47,9 +44,7 @@ async function handleGet(req, res) {
       console.warn(`Warning: ${result.error} for country ${countryCode}`)
     }
     
-    // The data is already enriched by the Firebase service, so we can use it directly
     const enrichedData = result.data || []
-
     
     const response = {
       country: countryCode,
@@ -65,7 +60,6 @@ async function handleGet(req, res) {
       ...(result.error && { warning: result.error })
     }
     
-    // ⏱ Cache headers
     res.setHeader('Cache-Control', 'public, max-age=600, stale-while-revalidate=1200')
     
     res.status(200).json(response)
