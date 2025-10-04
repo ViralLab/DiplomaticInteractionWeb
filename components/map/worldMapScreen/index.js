@@ -91,7 +91,7 @@ const WorldMapScreen = () => {
 							{showMapInfo && (
 								<div className={styles.mapInfoBox}>
 									<Icon name='info circle' />
-									<span>This map shows the diplomatic interactions and mentions of countries.</span>
+									<span>Through this map, you can click on a country to view the diplomatic interactions and mentions of that country.</span>
 									<Icon 
 										name='close' 
 										className={styles.closeIcon}
@@ -102,7 +102,7 @@ const WorldMapScreen = () => {
 							<div className={styles.mapLegend}>
 								<div className={styles.legendTitle}>Interactive Map</div>
 								<div className={styles.legendNotec}>
-									Click any country to view their diplomatic interactions
+									Click any country to view their data
 								</div>
 							</div>
 						</div>

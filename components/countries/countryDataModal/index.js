@@ -58,11 +58,21 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
         c.name.toLowerCase().includes(name.toLowerCase()) ||
         name.toLowerCase().includes(c.name.toLowerCase())
     )
-    return c ? c.code : null
+    return c ? c.countryCode : null
   }
 
-  const resolveCountryCode = () =>
-    country?.code || country?.countryCode || getCountryCodeFromName(countryName)
+  const resolveCountryCode = () => {
+    // First try direct country code from the country object
+    if (country?.code) return country.code;
+    if (country?.countryCode) return country.countryCode;
+    
+    // Then try to find by name in static countries data
+    const staticCountryCode = getCountryCodeFromName(countryName);
+    if (staticCountryCode) return staticCountryCode;
+    
+    // If not found, return null to trigger error
+    return null;
+  }
 
   const fetchPage = async (page = 1, prefetch = false) => {
     const countryCode = resolveCountryCode()

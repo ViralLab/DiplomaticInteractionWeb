@@ -18,7 +18,7 @@ async function handleGet(req, res) {
     }
     
     const countries = await mentionsService.getCountries()
-    const country = countries.find(c => c.code === countryCode)
+    const country = countries.find(c => c.code === countryCode || c.countryCode === countryCode)
     
     if (!country) {
       return res.status(200).json({

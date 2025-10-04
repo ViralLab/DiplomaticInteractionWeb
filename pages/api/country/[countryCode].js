@@ -19,9 +19,9 @@ async function handleGet(req, res) {
       return res.status(400).json({ error: 'Country code is required' })
     }
     
-    // 🔍 Match on `code`, not `countryCode`
+    // 🔍 Match on both `countryCode` and `code` fields
     const country = countriesData.find(
-      c => c.code === countryCode || c.countryCode === countryCode
+      c => c.countryCode === countryCode || c.code === countryCode
     );    
     console.log('country', country)
     
