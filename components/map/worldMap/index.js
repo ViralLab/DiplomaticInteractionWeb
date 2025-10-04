@@ -6,37 +6,27 @@ import CountryFlag from '@/components/countries/countryFlag'
 const WorldMap = ({
 	onCountryHover = () => {},
 	onCountryClick = () => {},
-	interactionData = null
+	countriesData,
 }) => {
 	const [hoveredCountry, setHoveredCountry] = useState(null)
 	const [selectedCountry, setSelectedCountry] = useState(null)
 	const [mapPosition, setMapPosition] = useState({ x: 0, y: 0, zoom: 1.2 })
-	const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
-
-	// Calculate interaction count for each country
-	const getInteractionCount = useCallback((countryId, data) => {
-		if (!data?.index?.byCountry?.[countryId]) return 0
-		const countryIndex = data.index.byCountry[countryId]
-		return countryIndex.asReporter.length + countryIndex.asReported.length
-	}, [])
 
 	// Create a map of country names to interaction data
 	const countryInteractionMap = useMemo(() => {
-		if (!interactionData?.countries) return {}
-		
+		if (!countriesData) return {}
+
 		const map = {}
-		interactionData.countries.forEach(country => {
-			const interactionCount = getInteractionCount(country.id, interactionData)
+		countriesData.forEach(country => {
 			map[country.name] = {
 				id: country.id,
 				name: country.name,
 				code: country.code,
-				interactionCount,
 				isSelected: selectedCountry === country.name
 			}
 		})
 		return map
-	}, [interactionData, selectedCountry, getInteractionCount])
+	}, [countriesData, selectedCountry])
 
 	const handleCountryHover = useCallback((geo) => {
 		const countryName = geo.properties.name
@@ -64,7 +54,6 @@ const WorldMap = ({
 		} else {
 			// For countries not in our data, create a basic country object
 			const isoCode = geo.properties.ISO_A2 || geo.properties.ISO_A3 || ''
-			console.log('Creating basic country data for:', countryName, 'ISO code:', isoCode)
 			const basicCountryData = {
 				name: countryName,
 				code: isoCode,

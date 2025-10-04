@@ -38,17 +38,13 @@ const Layout = ({ app }) => {
 					<Icon name='home' />
 					Home
 				</MenuItem>
-				<MenuItem as={Link} href="/countries" active={isActiveItem('countries')}>
-					<Icon name='world' />
-					Countries
-				</MenuItem>
 				<MenuItem
 					as={Link}
-					href="/interactions"
+					href="/interactions-mentions"
 					active={isActiveItem('interactions')}
 				>
 					<Icon name='exchange' />
-					Interactions
+					Interactions and Mentions
 				</MenuItem>
 				<MenuItem
 					as={Link}

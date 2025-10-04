@@ -9,45 +9,25 @@ import {
 	Icon,
 } from 'semantic-ui-react'
 import NetworkGraph from '../networkGraph'
+import { mentionsService } from '@/lib/firebase'
 
 const WorldMapScreen = () => {
 	const [visible, setVisible] = useState(false)
-	const [filters, setFilters] = useState({
-		interactionType: { show: false, subFilters: [] },
-		conversationType: { show: false, subFilters: [] },
-		topic: { show: false, subFilters: [] },
-		year: { show: false, subFilters: [] },
-		reporting: { show: false, subFilters: [] },
-	})
-
-	const [country, setCountry] = useState('')
+	const [country, setCountry] = useState(null)
 	const [modalOpen, setModalOpen] = useState(false)
-	const [filteredData, setFilteredData] = useState(null)
-	const [loading, setLoading] = useState(true)
+	const [loading, setLoading] = useState(false)
 	const [activeTab, setActiveTab] = useState('mentions')
 	const [showMapInfo, setShowMapInfo] = useState(true)
+	const [countriesData, setCountriesData] = useState(null)
 
-	const fetchData = async () => {
-		setLoading(true)
-		try {
-			const response = await fetch('/api/mentions?overview=true')
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`)
-			}
-			const mentionsData = await response.json()
-			// Pass the complete data structure, not just interactions
-			setFilteredData(mentionsData)
-		} catch (error) {
-			console.error('Error fetching data:', error)
-			setFilteredData(null)
-		} finally {
-			setLoading(false)
-		}
-	}
-	
 	useEffect(() => {
-		fetchData()
+		if (activeTab === 'mentions') {
+			mentionsService.getCountries().then((countries) => {
+				setCountriesData(countries)
+			})
+		}
 	}, [activeTab])
+
 	return (
 		<SidebarPushable>
 			<SidebarPusher>
@@ -73,7 +53,7 @@ const WorldMapScreen = () => {
 								primary={activeTab === 'network'}
 								basic={activeTab !== 'network'}
 								onClick={() => setActiveTab('network')}
-								className= '${styles.mapButton}'
+								className={styles.mapButton}
 							>
 								<Icon name='sitemap' />
 								Network
@@ -96,19 +76,20 @@ const WorldMapScreen = () => {
 						<div className={styles.mapContainer}>
 							<WorldMap
 								onCountryHover={(countryData) => {
-									// Only set country for hover, don't interfere with click
+									// Only set hover name, not the object
 									if (countryData && countryData.name) {
-										setCountry(countryData.name)
+										setCountry((prev) => ({ ...prev, name: countryData.name }))
 									}
 								}}
-								onCountryClick={(countryData) => {
+								onCountryClick={async (countryData) => {
+									console.log('clicking country', countryData)
 									if (countryData && countryData.name) {
-										// Set the clicked country and open modal
-										setCountry(countryData)
+										// Pass both code and name for modal
+										setCountry({ code: countryData.code, name: countryData.name })
 										setModalOpen(true)
 									}
 								}}
-								interactionData={filteredData}
+								countriesData={countriesData}
 							/>
 							{modalOpen && country && (
 								<CountryDataModal
@@ -130,16 +111,13 @@ const WorldMapScreen = () => {
 							)}
 							<div className={styles.mapLegend}>
 								<div className={styles.legendTitle}>Interactive Map</div>
-							
 								<div className={styles.legendNotec}>
 									Click any country to view their diplomatic interactions
 								</div>
 							</div>
 						</div>
 						) : (
-							
 						<NetworkGraph/>
-							
 						))
 					)}
 				</div>

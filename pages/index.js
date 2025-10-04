@@ -90,7 +90,7 @@ const LandingScreen = ({ onScroll }) => {
 					<Icon
 						name='angle double down'
 						size='huge'
-						color='rgb(25, 120, 120)'
+						color='black'
 						className={landingScreenStyles.scrollIcon}
 						onClick={onScroll}
 					/>

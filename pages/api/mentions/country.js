@@ -17,9 +17,7 @@ async function handleGet(req, res) {
       return res.status(400).json({ error: 'Country code is required' })
     }
     
-    // Get countries to find the country name
     const countries = await mentionsService.getCountries()
-
     const country = countries.find(c => c.code === countryCode)
     
     if (!country) {
@@ -33,21 +31,25 @@ async function handleGet(req, res) {
       })
     }
     
-    // Get interactions for this country from Firebase
+    // 🔑 Pull interactions
     const result = await mentionsService.getInteractionsForCountry(
       countryCode, 
       parseInt(limit), 
       parseInt(offset)
     )
     
-    // Enrich data with country names
-    const enrichedData = result.data.map(interaction => ({
-      ...interaction,
-      reporterName: countries.find(c => c.code === interaction.reporter)?.name,
-      reportedName: countries.find(c => c.code === interaction.reported)?.name,
-      reporterCode: interaction.reporter,
-      reportedCode: interaction.reported
-    }))
+    const enrichedData = result.data.map(interaction => {
+      const reporterCode = mentionsService.getCountryCodeFromId(interaction.reporting)
+      const reportedCode = mentionsService.getCountryCodeFromId(interaction.reported)
+      
+      return {
+        ...interaction,
+        reporterCode,
+        reportedCode,
+        reporterName: reporterCode,
+        reportedName: reportedCode,
+      }
+    })
     
     const response = {
       country: countryCode,
@@ -62,16 +64,10 @@ async function handleGet(req, res) {
       filters: {}
     }
     
-    // Set cache headers
-    res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
-    
     res.status(200).json(response)
     
   } catch (error) {
     console.error('Error reading country mentions data:', error)
-    console.error('Error stack:', error.stack)
-    
-    // Return a proper response even on error
     res.status(500).json({ 
       error: 'Failed to load country mentions data',
       message: error.message,

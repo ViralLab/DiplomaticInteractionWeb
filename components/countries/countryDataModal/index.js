@@ -1,268 +1,246 @@
 import React, { useState, useEffect } from 'react'
 import {
-	Modal,
-	Table,
-	Pagination,
-	Tab,
-	Segment,
-	Header,
-	Icon,
+  Modal,
+  Table,
+  Pagination,
+  Tab,
+  Segment,
+  Header,
+  Icon,
 } from 'semantic-ui-react'
 import styles from './countryDataModal.module.css'
 import countries from '../../../data/countries.js'
+import WorkInProgress from '@/components/utils/workInProgress/WorkInProgress'
 
 const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
-	const [activePage, setActivePage] = useState(1)
-	const [sortField, setSortField] = useState('date')
-	const [sortDirection, setSortDirection] = useState('desc')
-	const [mentionsData, setMentionsData] = useState(null)
-	const [loading, setLoading] = useState(false)
-	const itemsPerPage = 8
+  const [activePage, setActivePage] = useState(1)
+  const [sortField, setSortField] = useState('date')
+  const [sortDirection, setSortDirection] = useState('desc')
 
-	// Get country name from either title or name property
-	const countryName = country?.title || country?.name || ''
+  const [interactions, setInteractions] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-	useEffect(() => {
-		setActivePage(1)
-		setSortField('date')
-		setSortDirection('desc')
-	}, [modalOpen])
+  const [pageMeta, setPageMeta] = useState({
+    limit: 20, // rows per page
+    offset: 0,
+    total: 0,
+    hasMore: false,
+  })
 
-	// Fetch country-specific data when modal opens
-	useEffect(() => {
-		if (modalOpen && countryName) {
-			fetchCountryData()
-		}
-	}, [modalOpen, countryName])
+  const countryName = country?.title || country?.name || ''
 
-	const fetchCountryData = async () => {
-		setLoading(true)
-		try {
-			// Use country code directly if available, otherwise map from name
-			// Handle both 'code' and 'countryCode' properties
-			const countryCode = country?.code || country?.countryCode || getCountryCodeFromName(countryName)
-			
-			if (!countryCode) {
-				setMentionsData(null)
-				return
-			}
+  useEffect(() => {
+    setActivePage(1)
+    setSortField('date')
+    setSortDirection('desc')
+  }, [modalOpen])
 
-			const apiUrl = `${window.location.origin}/api/country/${countryCode}?limit=1000`			
-			const response = await fetch(apiUrl)
+  useEffect(() => {
+    if (modalOpen && countryName) {
+      setInteractions([])
+      setPageMeta({ limit: 20, offset: 0, total: 0, hasMore: false })
+      setError(null)
+      fetchPage(1) // load first page
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modalOpen, countryName])
 
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`)
-			}
-			const data = await response.json()
-			setMentionsData(data)
-		} catch (error) {
-			console.error('=== CLIENT FETCH ERROR ===')
-			console.error('Error fetching country data:', error)
-			setMentionsData(null)
-		} finally {
-			setLoading(false)
-		}
-	}
+  const getCountryCodeFromName = (name) => {
+    const c = countries.find(
+      (c) =>
+        c.name.toLowerCase() === name.toLowerCase() ||
+        c.name.toLowerCase().includes(name.toLowerCase()) ||
+        name.toLowerCase().includes(c.name.toLowerCase())
+    )
+    return c ? c.code : null
+  }
 
-	const getCountryCodeFromName = (name) => {
-		// Use the countries.js file to find country code
-		const country = countries.find(c => 
-			c.name.toLowerCase() === name.toLowerCase() ||
-			c.name.toLowerCase().includes(name.toLowerCase()) ||
-			name.toLowerCase().includes(c.name.toLowerCase())
-		)
-		return country ? country.countryCode : null
-	}
+  const resolveCountryCode = () =>
+    country?.code || country?.countryCode || getCountryCodeFromName(countryName)
 
-	// Get mentions for the current country
-	const getMentionsForCountry = () => {
-		if (!mentionsData || !mentionsData.data) {
-			return []
-		}
+  const fetchPage = async (page = 1) => {
+    const countryCode = resolveCountryCode()
+    if (!countryCode) {
+      setError('Country code could not be resolved.')
+      return
+    }
 
+    setLoading(true)
+    setError(null)
+    try {
+      const limit = pageMeta.limit || 20
+      const offset = (page - 1) * limit
+      const url = `/api/country/${countryCode}?limit=${limit}&offset=${offset}`
+      const res = await fetch(url)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = await res.json()
 
-		// The API already returns enriched data with country names
-		const interactions = mentionsData.data.map(interaction => ({
-			id: interaction.id,
-			reporter: interaction.reporterName || 'Unknown',
-			reported: interaction.reportedName || 'Unknown',
-			date: interaction.date,
-			year: new Date(interaction.date).getFullYear(),
-			type: interaction.type,
-			isReporter: interaction.reporterCode === getCountryCodeFromName(countryName)
-		}))
+      setInteractions(data?.data || [])
+      setPageMeta({
+        limit: data?.pagination?.limit ?? limit,
+        offset,
+        total: data?.pagination?.total ?? 0,
+        hasMore: data?.pagination?.hasMore ?? false,
+      })
+      setActivePage(page)
+    } catch (e) {
+      console.error('Failed to fetch country data:', e)
+      setError('Failed to fetch data. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortDirection('desc')
+    }
+  }
 
-			// Aggregate by reporter, reported, year, and type for more granular grouping
-			const aggregatedData = {}
-			interactions.forEach(interaction => {
-				const key = `${interaction.reporter}-${interaction.reported}-${interaction.year}-${interaction.type}`
-				if (!aggregatedData[key]) {
-					aggregatedData[key] = {
-						reporter: interaction.reporter,
-						reported: interaction.reported,
-						year: interaction.year,
-						date: interaction.date,
-						type: interaction.type,
-						count: 0
-					}
-				}
-				aggregatedData[key].count++
-			})
-			
-			const result = Object.values(aggregatedData).sort((a, b) => {
-				if (sortField === 'year') {
-					return sortDirection === 'desc' ? b.year - a.year : a.year - b.year
-				} else if (sortField === 'count') {
-					return sortDirection === 'desc' ? b.count - a.count : a.count - b.count
-				}
-				return b.year - a.year || a.reporter.localeCompare(b.reporter)
-			})
-			
-			return result
-		}
+  // client-side sort of the current page
+  const sortedInteractions = [...interactions].sort((a, b) => {
+    if (sortField === 'date') {
+      const ad = new Date(a.date)
+      const bd = new Date(b.date)
+      return sortDirection === 'desc' ? bd - ad : ad - bd
+    } else if (sortField === 'reporter') {
+      return sortDirection === 'desc'
+        ? (b.reporterName || '').localeCompare(a.reporterName || '')
+        : (a.reporterName || '').localeCompare(b.reporterName || '')
+    } else if (sortField === 'reported') {
+      return sortDirection === 'desc'
+        ? (b.reportedName || '').localeCompare(a.reportedName || '')
+        : (a.reportedName || '').localeCompare(b.reportedName || '')
+    }
+    return 0
+  })
 
-	const handleSort = (field) => {
-		if (sortField === field) {
-			setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
-		} else {
-			setSortField(field)
-			setSortDirection('desc')
-		}
-		setActivePage(1)
-	}
+  const mentionsTab = (
+    <Tab.Pane>
+      {loading && interactions.length === 0 ? (
+        <Segment placeholder className={styles.workInProgressSegment}>
+          <Header icon textAlign="center">
+            <Icon name="spinner" loading size="big" />
+            Loading Data
+            <Header.Subheader>
+              Fetching interactions for {countryName}...
+            </Header.Subheader>
+          </Header>
+        </Segment>
+      ) : error ? (
+        <Segment placeholder className={styles.workInProgressSegment}>
+          <Header icon textAlign="center">
+            <Icon name="warning circle" size="big" color="red" />
+            {error}
+          </Header>
+        </Segment>
+      ) : interactions.length > 0 ? (
+        <>
+          <div className={styles.tableWrapper}>
+            <Table celled compact size="small" className={styles.fittedTable}>
+              <Table.Header>
+                <Table.Row>
+                  <Table.HeaderCell
+                    onClick={() => handleSort('reporter')}
+                    className={styles.sortableHeader}
+                  >
+                    Reporter
+                  </Table.HeaderCell>
+                  <Table.HeaderCell
+                    onClick={() => handleSort('reported')}
+                    className={styles.sortableHeader}
+                  >
+                    Reported
+                  </Table.HeaderCell>
+                  <Table.HeaderCell
+                    onClick={() => handleSort('date')}
+                    className={styles.sortableHeader}
+                  >
+                    Date
+                    <span
+                      className={`${styles.sortIcon} ${
+                        sortField === 'date' ? styles.active : styles.inactive
+                      }`}
+                    >
+                      {sortField === 'date'
+                        ? sortDirection === 'desc'
+                          ? '▼'
+                          : '▲'
+                        : '↕'}
+                    </span>
+                  </Table.HeaderCell>
+                  {/* Type column header with Work in Progress note */}
+                  <Table.HeaderCell>Type (Work in Progress)</Table.HeaderCell>
+                </Table.Row>
+              </Table.Header>
+			  <Table.Body>
+				{sortedInteractions.map((item) => (
+					<Table.Row key={item.id}>
+						<Table.Cell>{item.reporterName|| 'Unknown'}</Table.Cell>
+						<Table.Cell>{item.reportedName || 'Unknown'}</Table.Cell>
+						<Table.Cell>{item.date || 'Unknown'}</Table.Cell>
+						{/* Show dash until type is available */}
+						<Table.Cell>-</Table.Cell>
+					</Table.Row>
+				))}
+			  </Table.Body>
+            </Table>
+          </div>
 
-	const mentions = getMentionsForCountry()
-	const indexOfLastItem = activePage * itemsPerPage
-	const indexOfFirstItem = indexOfLastItem - itemsPerPage
-	const currentItems = mentions.slice(indexOfFirstItem, indexOfLastItem)
+          <div className={styles.paginationWrapper}>
+            <div
+              style={{ marginBottom: '0.25rem', color: '#666', fontSize: '0.85em' }}
+            >
+              Page {activePage} of {Math.ceil(pageMeta.total / pageMeta.limit) || 1}
+              &nbsp; | &nbsp; {pageMeta.total} total interactions
+            </div>
 
-	const totalPages = Math.ceil(mentions.length / itemsPerPage)
+            <Pagination
+              activePage={activePage}
+              totalPages={Math.ceil(pageMeta.total / pageMeta.limit) || 1}
+              onPageChange={(e, { activePage: next }) => {
+                fetchPage(next)
+              }}
+              size="mini"
+              boundaryRange={1}
+              siblingRange={1}
+              ellipsisItem={null}
+              firstItem={null}
+              lastItem={null}
+            />
+          </div>
+        </>
+      ) : (
+        <Segment placeholder className={styles.workInProgressSegment}>
+          <Header icon textAlign="center">
+            <Icon name="info circle" size="big" />
+            No Interactions Found
+            <Header.Subheader>
+              No interaction data available for this country.
+            </Header.Subheader>
+          </Header>
+        </Segment>
+      )}
+    </Tab.Pane>
+  )
 
-	const workInProgressView = (
-		<Segment placeholder className={styles.workInProgressSegment}>
-			<Header icon textAlign="center">
-				<Icon name="cogs" size="big" />
-				Work in Progress
-				<Header.Subheader>
-					This section will be available with the actual data soon.
-				</Header.Subheader>
-			</Header>
-		</Segment>
-	)
+  const panes = [
+    { menuItem: 'Mentions', render: () => mentionsTab },
+    { menuItem: 'Interactions', render: () => <Tab.Pane><WorkInProgress /></Tab.Pane> },
+  ]
 
-	const mentionsTab = (
-		<Tab.Pane>
-			{loading ? (
-				<Segment placeholder className={styles.workInProgressSegment}>
-					<Header icon textAlign="center">
-						<Icon name="spinner" loading size="big" />
-						Loading Data
-						<Header.Subheader>
-							Fetching mentions data for {countryName}...
-						</Header.Subheader>
-					</Header>
-				</Segment>
-			) : mentions.length > 0 ? (
-				<>
-					<div className={styles.tableWrapper}>
-						<div className={styles.tableHeader}></div>
-						<Table celled compact size="small" className={styles.fittedTable}>
-							<Table.Header>
-								<Table.Row>
-									<Table.HeaderCell>Reporter</Table.HeaderCell>
-									<Table.HeaderCell>Reported</Table.HeaderCell>
-									<Table.HeaderCell 
-										onClick={() => handleSort('year')}
-										className={styles.sortableHeader}
-									>
-										Year
-										<span className={`${styles.sortIcon} ${sortField === 'year' ? styles.active : styles.inactive}`}>
-											{sortField === 'year' ? (sortDirection === 'desc' ? '▼' : '▲') : '↕'}
-										</span>
-									</Table.HeaderCell>
-									<Table.HeaderCell 
-										onClick={() => handleSort('count')}
-										className={styles.sortableHeader}
-									>
-										Count
-										<span className={`${styles.sortIcon} ${sortField === 'count' ? styles.active : styles.inactive}`}>
-											{sortField === 'count' ? (sortDirection === 'desc' ? '▼' : '▲') : '↕'}
-										</span>
-									</Table.HeaderCell>
-								</Table.Row>
-							</Table.Header>
-							<Table.Body>
-								{currentItems.map((item, index) => (
-									<Table.Row key={index}>
-										<Table.Cell className={styles.cell}>{item.reporter}</Table.Cell>
-										<Table.Cell className={styles.cell}>{item.reported}</Table.Cell>
-										<Table.Cell className={styles.cell}>{item.year}</Table.Cell>
-										<Table.Cell className={styles.cell}>{item.count}</Table.Cell>
-									</Table.Row>
-								))}
-							</Table.Body>
-						</Table>
-					</div>
-					{mentions.length > 0 && (
-						<div className={styles.paginationWrapper}>
-							<div style={{ marginBottom: '0.25rem', color: '#666', fontSize: '0.85em' }}>
-								Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, mentions.length)} of {mentions.length} interactions
-							</div>
-							{totalPages > 1 && (
-								<Pagination
-									activePage={activePage}
-									totalPages={totalPages}
-									onPageChange={(e, { activePage }) => setActivePage(activePage)}
-									size="mini"
-									boundaryRange={1}
-									siblingRange={1}
-									ellipsisItem={null}
-									firstItem={null}
-									lastItem={null}
-								/>
-							)}
-							{totalPages === 1 && mentions.length > 0 && (
-								<div style={{ color: '#999', fontSize: '0.75em', fontStyle: 'italic', marginTop: '0.25rem' }}>
-									All interactions shown (single page)
-								</div>
-							)}
-						</div>
-					)}
-				</>
-			) : (
-				<Segment placeholder className={styles.workInProgressSegment}>
-					<Header icon textAlign="center">
-						<Icon name="info circle" size="big" />
-						No Mentions Found
-						<Header.Subheader>
-							No interaction data available for this country.
-						</Header.Subheader>
-					</Header>
-				</Segment>
-			)}
-		</Tab.Pane>
-	)
-
-	const panes = [
-		{
-			menuItem: 'Mentions',
-			render: () => mentionsTab,
-		},
-		{
-			menuItem: 'Interactions',
-			render: () => <Tab.Pane>{workInProgressView}</Tab.Pane>,
-		},
-	]
-
-	return (
-		<Modal open={modalOpen} onClose={onModalClose} size="large">
-			<Modal.Header>{countryName}</Modal.Header>
-			<Modal.Content>
-				<Tab panes={panes} />
-			</Modal.Content>
-		</Modal>
-	)
+  return (
+    <Modal open={modalOpen} onClose={onModalClose} size="large">
+      <Modal.Header>{countryName}</Modal.Header>
+      <Modal.Content>
+        <Tab panes={panes} />
+      </Modal.Content>
+    </Modal>
+  )
 }
 
 export default CountryDataModal

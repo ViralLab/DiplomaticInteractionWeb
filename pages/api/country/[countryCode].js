@@ -1,4 +1,5 @@
 import { mentionsService } from '../../../lib/firebase'
+import countriesData from '../../../data/countries'
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
@@ -18,10 +19,11 @@ async function handleGet(req, res) {
       return res.status(400).json({ error: 'Country code is required' })
     }
     
-    // Get countries to find the country name
-    const countries = await mentionsService.getCountries()
-
-    const country = countries.find(c => c.code === countryCode)
+    // 🔍 Match on `code`, not `countryCode`
+    const country = countriesData.find(
+      c => c.code === countryCode || c.countryCode === countryCode
+    );    
+    console.log('country', country)
     
     if (!country) {
       return res.status(200).json({
@@ -34,37 +36,37 @@ async function handleGet(req, res) {
       })
     }
     
-    // Get interactions for this country from Firebase
+    // 🔑 Get interactions for this country from Firebase
     const result = await mentionsService.getInteractionsForCountry(
       countryCode, 
       parseInt(limit), 
       parseInt(offset)
     )
     
-    // Enrich data with country names
-    const enrichedData = result.data.map(interaction => ({
-      ...interaction,
-      reporterName: countries.find(c => c.code === interaction.reporter)?.name,
-      reportedName: countries.find(c => c.code === interaction.reported)?.name,
-      reporterCode: interaction.reporter,
-      reportedCode: interaction.reported
-    }))
+    if (result.error) {
+      console.warn(`Warning: ${result.error} for country ${countryCode}`)
+    }
+    
+    // The data is already enriched by the Firebase service, so we can use it directly
+    const enrichedData = result.data || []
+
     
     const response = {
       country: countryCode,
       countryName: country.name,
       data: enrichedData,
       pagination: {
-        total: result.total,
+        total: result.total || 0,
         limit: parseInt(limit),
         offset: parseInt(offset),
-        hasMore: result.hasMore
+        hasMore: result.hasMore || false
       },
-      filters: {}
+      filters: {},
+      ...(result.error && { warning: result.error })
     }
     
-    // Set cache headers
-    res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
+    // ⏱ Cache headers
+    res.setHeader('Cache-Control', 'public, max-age=600, stale-while-revalidate=1200')
     
     res.status(200).json(response)
     
@@ -72,11 +74,18 @@ async function handleGet(req, res) {
     console.error('Error reading country mentions data:', error)
     console.error('Error stack:', error.stack)
     
-    // Return a proper response even on error
-    res.status(500).json({ 
-      error: 'Failed to load country mentions data',
-      message: error.message,
-      country: req.query.countryCode || 'unknown'
+    res.status(200).json({ 
+      country: req.query.countryCode || 'unknown',
+      countryName: req.query.countryCode || 'unknown',
+      data: [],
+      pagination: { 
+        total: 0, 
+        limit: parseInt(req.query.limit) || 50, 
+        offset: parseInt(req.query.offset) || 0, 
+        hasMore: false 
+      },
+      filters: {},
+      warning: 'Service temporarily unavailable, please try again'
     })
   }
 }

@@ -10,8 +10,6 @@ import {
   Loader, 
   Dimmer,
   Button,
-  Grid,
-  Card
 } from 'semantic-ui-react';
 import CountryFlag from '@/components/countries/countryFlag';
 import countriesData from '@/data/countries';
@@ -55,7 +53,7 @@ const CountryPage = () => {
   const fetchCountryData = async () => {
     setLoading(true);
     try {
-      const apiUrl = `/api/country/${countryCode}?limit=1000`;
+      const apiUrl = `/api/country/${countryCode}?limit=50`
       const response = await fetch(apiUrl);
 
       if (!response.ok) {
@@ -91,10 +89,10 @@ const CountryPage = () => {
     // Aggregate by reporter, reported, year, and type for more granular grouping
     const aggregatedData = {};
     interactions.forEach(interaction => {
-      const key = `${interaction.reporter}-${interaction.reported}-${interaction.year}-${interaction.type}`;
+      const key = `${interaction.reporting}-${interaction.reported}-${interaction.year}-${interaction.type}`;
       if (!aggregatedData[key]) {
         aggregatedData[key] = {
-          reporter: interaction.reporter,
+          reporter: interaction.reporting,
           reported: interaction.reported,
           year: interaction.year,
           date: interaction.date,
@@ -134,7 +132,7 @@ const CountryPage = () => {
   const totalPages = Math.ceil(mentions.length / itemsPerPage);
 
   const handleBackToCountries = () => {
-    router.push('/countries');
+    router.push('/interactions-mentions');
   };
 
   const mentionsTab = (
@@ -269,7 +267,7 @@ const CountryPage = () => {
       <div className={styles.headerSection}>
         <Button 
           icon='arrow left' 
-          content='Back to Countries' 
+          content='Back to Interactions' 
           onClick={handleBackToCountries}
           className={styles.backButton}
         />

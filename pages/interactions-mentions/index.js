@@ -8,7 +8,6 @@ const CountriesPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [countries, setCountries] = useState([]);
-  const [interactionCounts, setInteractionCounts] = useState({});
 
   // Fetch countries data and interaction counts
   useEffect(() => {
@@ -25,16 +24,6 @@ const CountriesPage = () => {
         // Set countries from Firebase data
         if (data.countries) {
           setCountries(data.countries);
-        }
-
-        // Calculate interaction counts for each country
-        if (data.index && data.index.byCountry) {
-          const counts = {};
-          Object.entries(data.index.byCountry).forEach(([countryId, interactions]) => {
-            const totalInteractions = interactions.asReporter.length + interactions.asReported.length;
-            counts[countryId] = totalInteractions;
-          });
-          setInteractionCounts(counts);
         }
       } catch (error) {
         console.error('Error fetching countries data:', error);
@@ -75,7 +64,7 @@ const CountriesPage = () => {
   const handleCountryClick = (country) => {
     const countryCode = country.countryCode || country.code;
     if (countryCode) {
-      window.location.href = `/countries/${countryCode}`;
+      window.location.href = `/interactions-mentions/${countryCode}`;
     }
   };
 
@@ -87,11 +76,11 @@ const CountriesPage = () => {
 
       <div className={styles.headerSection}>
         <Header as='h1' className={styles.pageTitle}>
-          <Icon name='world' />
-          Countries
+          <Icon name='exchange' />
+          Interactions and Mentions
         </Header>
         <p className={styles.pageDescription}>
-          Explore diplomatic interactions and mentions by searching for countries
+          Explore diplomatic interactions and mentions by searching countries
         </p>
       </div>
 
@@ -113,12 +102,11 @@ const CountriesPage = () => {
             {filteredCountries.length} {filteredCountries.length === 1 ? 'country' : 'countries'} found
           </span>
         </div>
-
+ 
         <Grid className={styles.countriesGrid}>
           {filteredCountries.map((country) => {
             const countryCode = country.countryCode || country.code;
             const countryName = country.name || country.countryName;
-            const interactionCount = getInteractionCount(country.id);
 
             return (
               <Grid.Column key={country.id || countryCode} mobile={16} tablet={8} computer={4}>
@@ -141,10 +129,8 @@ const CountriesPage = () => {
                       <Card.Meta className={styles.countryCode}>
                         {countryCode}
                       </Card.Meta>
-                      <Card.Description className={styles.interactionCount}>
-                        <Icon name='exchange' />
-                        {interactionCount} interactions
-                      </Card.Description>
+                      <div className={styles.interactionMentionContainer}>
+                      </div>
                     </div>
                   </Card.Content>
                 </Card>

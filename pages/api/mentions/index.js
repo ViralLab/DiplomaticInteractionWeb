@@ -31,13 +31,10 @@ async function handleGet(req, res) {
     }
     
     // Get filtered interactions from Firebase
-    const result = await mentionsService.getInteractions(
-      { country, year, type },
+    const result = await mentionsService.getInteractionsForCountry(
+      country,
       { limit: parseInt(limit), offset: parseInt(offset), sort, order }
     )
-    
-    // Set cache headers
-    res.setHeader('Cache-Control', 'public, max-age=300, stale-while-revalidate=600')
     
     // Return response
     res.status(200).json({
@@ -47,11 +44,6 @@ async function handleGet(req, res) {
         limit: parseInt(limit),
         offset: parseInt(offset),
         hasMore: result.hasMore
-      },
-      filters: {
-        country,
-        year,
-        type
       }
     })
     
