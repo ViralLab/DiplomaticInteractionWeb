@@ -1,3 +1,24 @@
+.modalHeader {
+  display: flex !important;
+  align-items: center !important;
+  padding: 1rem 1.5rem !important;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+  border-bottom: 2px solid #dee2e6 !important;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.countryName {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  color: #2c3e50 !important;
+  margin: 0 !important;
+}
+
 .fittedTable th,
 .fittedTable td {
   white-space: nowrap;

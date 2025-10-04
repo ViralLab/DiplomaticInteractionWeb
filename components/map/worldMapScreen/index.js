@@ -59,15 +59,6 @@ const WorldMapScreen = () => {
 								Network
 							</Button>
 						</div>
-						<div className={styles.filterContainer}>
-							<Button
-								icon='filter'
-								content='Filter'
-								color='grey'
-								onClick={() => setVisible(!visible)}
-								className={styles.filterButton}
-							/>
-						</div>
 					</div>
 					{loading ? (
 						<div>Loading...</div>
@@ -82,7 +73,6 @@ const WorldMapScreen = () => {
 									}
 								}}
 								onCountryClick={async (countryData) => {
-									console.log('clicking country', countryData)
 									if (countryData && countryData.name) {
 										// Pass both code and name for modal
 										setCountry({ code: countryData.code, name: countryData.name })

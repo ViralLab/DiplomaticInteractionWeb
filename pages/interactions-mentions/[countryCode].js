@@ -13,6 +13,7 @@ import {
 } from 'semantic-ui-react';
 import CountryFlag from '@/components/countries/countryFlag';
 import countriesData from '@/data/countries';
+import WorkInProgress from '@/components/utils/workInProgress/WorkInProgress';
 import styles from './countryDetail.module.css';
 
 const CountryPage = () => {
@@ -22,11 +23,20 @@ const CountryPage = () => {
   const [activePage, setActivePage] = useState(1);
   const [sortField, setSortField] = useState('date');
   const [sortDirection, setSortDirection] = useState('desc');
-  const [mentionsData, setMentionsData] = useState(null);
+  const [interactions, setInteractions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [countryInfo, setCountryInfo] = useState(null);
   
-  const itemsPerPage = 10;
+  const [pageMeta, setPageMeta] = useState({
+    limit: 20,
+    offset: 0,
+    total: 0,
+    hasMore: false,
+  });
+
+  // cache to store fetched pages
+  const [pageCache, setPageCache] = useState({});
 
   // Get country information from countries data
   useEffect(() => {
@@ -41,79 +51,86 @@ const CountryPage = () => {
     setActivePage(1);
     setSortField('date');
     setSortDirection('desc');
+    setPageCache({});
   }, [countryCode]);
 
   // Fetch country-specific data
   useEffect(() => {
-    if (countryCode) {
-      fetchCountryData();
+    if (countryCode && countryInfo) {
+      setInteractions([]);
+      setPageMeta({ limit: 20, offset: 0, total: 0, hasMore: false });
+      setError(null);
+      fetchPage(1); // load first page
     }
-  }, [countryCode]);
+  }, [countryCode, countryInfo]);
 
-  const fetchCountryData = async () => {
-    setLoading(true);
+  const fetchPage = async (page = 1, prefetch = false) => {
+    if (!countryCode) {
+      setError('Country code is required.');
+      return;
+    }
+
+    // if cached already
+    if (pageCache[page]) {
+      if (!prefetch) {
+        setInteractions(pageCache[page].data);
+        setPageMeta(pageCache[page].pageMeta);
+        setActivePage(page);
+      }
+      return;
+    }
+
+    if (!prefetch) setLoading(true);
+    setError(null);
+
     try {
-      const apiUrl = `/api/country/${countryCode}?limit=50`
-      const response = await fetch(apiUrl);
+      const limit = pageMeta.limit || 20;
+      const offset = (page - 1) * limit;
+      const url = `/api/country/${countryCode}?limit=${limit}&offset=${offset}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const newPageMeta = {
+        limit: data?.pagination?.limit ?? limit,
+        offset,
+        total: data?.pagination?.total ?? 0,
+        hasMore: data?.pagination?.hasMore ?? false,
+      };
+
+      // store in cache
+      setPageCache(prev => ({
+        ...prev,
+        [page]: { data: data?.data || [], pageMeta: newPageMeta }
+      }));
+
+      if (!prefetch) {
+        setInteractions(data?.data || []);
+        setPageMeta(newPageMeta);
+        setActivePage(page);
       }
-      const data = await response.json();
-      setMentionsData(data);
-    } catch (error) {
-      console.error('Error fetching country data:', error);
-      setMentionsData(null);
+    } catch (e) {
+      if (!prefetch) {
+        console.error('Failed to fetch country data:', e);
+        setError('Failed to fetch data. Please try again.');
+      }
     } finally {
-      setLoading(false);
+      if (!prefetch) setLoading(false);
     }
   };
 
-  // Get mentions for the current country
-  const getMentionsForCountry = () => {
-    if (!mentionsData || !mentionsData.data) {
-      return [];
+  // prefetch next 3 pages in background
+  useEffect(() => {
+    if (activePage > 0 && pageMeta.total > 0) {
+      for (let i = 1; i <= 3; i++) {
+        const nextPage = activePage + i;
+        const totalPages = Math.ceil(pageMeta.total / (pageMeta.limit || 20));
+        if (nextPage <= totalPages && !pageCache[nextPage]) {
+          fetchPage(nextPage, true); // background fetch
+        }
+      }
     }
-
-    // The API already returns enriched data with country names
-    const interactions = mentionsData.data.map(interaction => ({
-      id: interaction.id,
-      reporter: interaction.reporterName || 'Unknown',
-      reported: interaction.reportedName || 'Unknown',
-      date: interaction.date,
-      year: new Date(interaction.date).getFullYear(),
-      type: interaction.type,
-      isReporter: interaction.reporterCode === countryCode
-    }));
-
-    // Aggregate by reporter, reported, year, and type for more granular grouping
-    const aggregatedData = {};
-    interactions.forEach(interaction => {
-      const key = `${interaction.reporting}-${interaction.reported}-${interaction.year}-${interaction.type}`;
-      if (!aggregatedData[key]) {
-        aggregatedData[key] = {
-          reporter: interaction.reporting,
-          reported: interaction.reported,
-          year: interaction.year,
-          date: interaction.date,
-          type: interaction.type,
-          count: 0
-        };
-      }
-      aggregatedData[key].count++;
-    });
-    
-    const result = Object.values(aggregatedData).sort((a, b) => {
-      if (sortField === 'year') {
-        return sortDirection === 'desc' ? b.year - a.year : a.year - b.year;
-      } else if (sortField === 'count') {
-        return sortDirection === 'desc' ? b.count - a.count : a.count - b.count;
-      }
-      return b.year - a.year || a.reporter.localeCompare(b.reporter);
-    });
-    
-    return result;
-  };
+  }, [activePage, pageMeta.total]);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -122,14 +139,24 @@ const CountryPage = () => {
       setSortField(field);
       setSortDirection('desc');
     }
-    setActivePage(1);
   };
 
-  const mentions = getMentionsForCountry();
-  const indexOfLastItem = activePage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = mentions.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(mentions.length / itemsPerPage);
+  const sortedInteractions = [...interactions].sort((a, b) => {
+    if (sortField === 'date') {
+      const ad = new Date(a.date);
+      const bd = new Date(b.date);
+      return sortDirection === 'desc' ? bd - ad : ad - bd;
+    } else if (sortField === 'reporter') {
+      return sortDirection === 'desc'
+        ? (b.reporterName || '').localeCompare(a.reporterName || '')
+        : (a.reporterName || '').localeCompare(b.reporterName || '');
+    } else if (sortField === 'reported') {
+      return sortDirection === 'desc'
+        ? (b.reportedName || '').localeCompare(a.reportedName || '')
+        : (a.reportedName || '').localeCompare(b.reportedName || '');
+    }
+    return 0;
+  });
 
   const handleBackToCountries = () => {
     router.push('/interactions-mentions');
@@ -137,87 +164,126 @@ const CountryPage = () => {
 
   const mentionsTab = (
     <Tab.Pane>
-      {loading ? (
+      {loading && interactions.length === 0 ? (
         <Segment placeholder className={styles.loadingSegment}>
           <Header icon textAlign="center">
             <Icon name="spinner" loading size="big" />
             Loading Data
             <Header.Subheader>
-              Fetching mentions data for {countryInfo?.name}...
+              Fetching interactions for {countryInfo?.name}...
             </Header.Subheader>
           </Header>
         </Segment>
-      ) : mentions.length > 0 ? (
+      ) : error ? (
+        <Segment placeholder className={styles.loadingSegment}>
+          <Header icon textAlign="center">
+            <Icon name="warning circle" size="big" color="red" />
+            {error}
+          </Header>
+        </Segment>
+      ) : interactions.length > 0 ? (
         <>
           <div className={styles.tableWrapper}>
             <Table celled compact size="small" className={styles.fittedTable}>
               <Table.Header>
                 <Table.Row>
-                  <Table.HeaderCell>Reporter</Table.HeaderCell>
-                  <Table.HeaderCell>Reported</Table.HeaderCell>
-                  <Table.HeaderCell 
-                    onClick={() => handleSort('year')}
+                  <Table.HeaderCell
+                    onClick={() => handleSort('reporter')}
                     className={styles.sortableHeader}
                   >
-                    Year
-                    <span className={`${styles.sortIcon} ${sortField === 'year' ? styles.active : styles.inactive}`}>
-                      {sortField === 'year' ? (sortDirection === 'desc' ? '▼' : '▲') : '↕'}
+                    Reporter
+                    <span
+                      className={`${styles.sortIcon} ${
+                        sortField === 'reporter' ? styles.active : styles.inactive
+                      }`}
+                    >
+                      {sortField === 'reporter'
+                        ? sortDirection === 'desc'
+                          ? '▼'
+                          : '▲'
+                        : '↕'}
                     </span>
                   </Table.HeaderCell>
-                  <Table.HeaderCell 
-                    onClick={() => handleSort('count')}
+                  <Table.HeaderCell
+                    onClick={() => handleSort('reported')}
                     className={styles.sortableHeader}
                   >
-                    Count
-                    <span className={`${styles.sortIcon} ${sortField === 'count' ? styles.active : styles.inactive}`}>
-                      {sortField === 'count' ? (sortDirection === 'desc' ? '▼' : '▲') : '↕'}
+                    Reported
+                    <span
+                      className={`${styles.sortIcon} ${
+                        sortField === 'reported' ? styles.active : styles.inactive
+                      }`}
+                    >
+                      {sortField === 'reported'
+                        ? sortDirection === 'desc'
+                          ? '▼'
+                          : '▲'
+                        : '↕'}
                     </span>
+                  </Table.HeaderCell>
+                  <Table.HeaderCell
+                    onClick={() => handleSort('date')}
+                    className={styles.sortableHeader}
+                  >
+                    Date
+                    <span
+                      className={`${styles.sortIcon} ${
+                        sortField === 'date' ? styles.active : styles.inactive
+                      }`}
+                    >
+                      {sortField === 'date'
+                        ? sortDirection === 'desc'
+                          ? '▼'
+                          : '▲'
+                        : '↕'}
+                    </span>
+                  </Table.HeaderCell>
+                  <Table.HeaderCell style={{ color: '#999', fontWeight: 'normal' }}>
+                    Type (Work in Progress)
                   </Table.HeaderCell>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {currentItems.map((item, index) => (
-                  <Table.Row key={index}>
-                    <Table.Cell className={styles.cell}>{item.reporter}</Table.Cell>
-                    <Table.Cell className={styles.cell}>{item.reported}</Table.Cell>
-                    <Table.Cell className={styles.cell}>{item.year}</Table.Cell>
-                    <Table.Cell className={styles.cell}>{item.count}</Table.Cell>
+                {sortedInteractions.map((item) => (
+                  <Table.Row key={item.id}>
+                    <Table.Cell>{item.reporterName || 'Unknown'}</Table.Cell>
+                    <Table.Cell>{item.reportedName || 'Unknown'}</Table.Cell>
+                    <Table.Cell>{item.date || 'Unknown'}</Table.Cell>
+                    <Table.Cell>-</Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>
             </Table>
           </div>
-          {mentions.length > 0 && (
-            <div className={styles.paginationWrapper}>
-              <div className={styles.paginationInfo}>
-                Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, mentions.length)} of {mentions.length} interactions
-              </div>
-              {totalPages > 1 && (
-                <Pagination
-                  activePage={activePage}
-                  totalPages={totalPages}
-                  onPageChange={(e, { activePage }) => setActivePage(activePage)}
-                  size="mini"
-                  boundaryRange={1}
-                  siblingRange={1}
-                  ellipsisItem={null}
-                  firstItem={null}
-                  lastItem={null}
-                />
-              )}
-              {totalPages === 1 && mentions.length > 0 && (
-                <div className={styles.singlePageNote}>
-                  All interactions shown (single page)
-                </div>
-              )}
+
+          <div className={styles.paginationWrapper}>
+            <div
+              style={{ marginBottom: '0.25rem', color: '#666', fontSize: '0.85em' }}
+            >
+              Page {activePage} of {Math.ceil(pageMeta.total / pageMeta.limit) || 1}
+              &nbsp; | &nbsp; {pageMeta.total} total interactions
             </div>
-          )}
+
+            <Pagination
+              activePage={activePage}
+              totalPages={Math.ceil(pageMeta.total / pageMeta.limit) || 1}
+              onPageChange={(e, { activePage: next }) => {
+                fetchPage(next);
+              }}
+              size="mini"
+              boundaryRange={1}
+              siblingRange={1}
+              ellipsisItem={null}
+              firstItem={null}
+              lastItem={null}
+            />
+          </div>
         </>
       ) : (
-        <Segment placeholder className={styles.noDataSegment}>
+        <Segment placeholder className={styles.loadingSegment}>
           <Header icon textAlign="center">
             <Icon name="info circle" size="big" />
-            No Mentions Found
+            No Interactions Found
             <Header.Subheader>
               No interaction data available for this country.
             </Header.Subheader>
@@ -229,15 +295,7 @@ const CountryPage = () => {
 
   const interactionsTab = (
     <Tab.Pane>
-      <Segment placeholder className={styles.workInProgressSegment}>
-        <Header icon textAlign="center">
-          <Icon name="cogs" size="big" />
-          Work in Progress
-          <Header.Subheader>
-            This section will be available with the actual data soon.
-          </Header.Subheader>
-        </Header>
-      </Segment>
+      <WorkInProgress />
     </Tab.Pane>
   );
 
@@ -285,7 +343,7 @@ const CountryPage = () => {
             <p className={styles.countryCode}>{countryCode}</p>
             <div className={styles.interactionStats}>
               <Icon name='exchange' />
-              <span>{mentions.length} total interactions</span>
+              <span>{pageMeta.total} total interactions</span>
             </div>
           </div>
         </div>

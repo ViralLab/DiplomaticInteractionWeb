@@ -11,6 +11,7 @@ import {
 import styles from './countryDataModal.module.css'
 import countries from '../../../data/countries.js'
 import WorkInProgress from '@/components/utils/workInProgress/WorkInProgress'
+import CountryFlag from '@/components/countries/countryFlag'
 
 const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
   const [activePage, setActivePage] = useState(1)
@@ -274,7 +275,16 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
 
   return (
     <Modal open={modalOpen} onClose={onModalClose} size="large">
-      <Modal.Header>{countryName}</Modal.Header>
+      <Modal.Header className={styles.modalHeader}>
+        <div className={styles.headerContent}>
+          <CountryFlag 
+            name={countryName} 
+            countryCode={country?.code || country?.countryCode} 
+            fontSize={32}
+          />
+          <span className={styles.countryName}>{countryName}</span>
+        </div>
+      </Modal.Header>
       <Modal.Content>
         <Tab panes={panes} />
       </Modal.Content>

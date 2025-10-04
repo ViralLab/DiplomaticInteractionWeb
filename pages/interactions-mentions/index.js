@@ -80,7 +80,7 @@ const CountriesPage = () => {
           Interactions and Mentions
         </Header>
         <p className={styles.pageDescription}>
-          Explore diplomatic interactions and mentions by searching countries
+          Explore diplomatic interactions and mentions by selecting countries
         </p>
       </div>
 

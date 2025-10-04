@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps'
 import styles from './worldMap.module.css'
-import CountryFlag from '@/components/countries/countryFlag'
+import CountryTooltip from './CountryTooltip'
 
 const WorldMap = ({
 	onCountryHover = () => {},
@@ -180,26 +180,8 @@ const WorldMap = ({
 				</ZoomableGroup>
 			</ComposableMap>
 			
-			{/* Enhanced hover tooltip */}
-			{hoveredCountry && (
-				<div className={styles.tooltip}>
-					<div className={styles.tooltipHeader}>
-						<div className={styles.countryInfo}>
-							<CountryFlag name={hoveredCountry.name} />
-							<span className={styles.countryName}>{hoveredCountry.name}</span>
-						</div>
-						{hoveredCountry.isSelected && (
-							<span className={styles.selectedBadge}>Selected</span>
-						)}
-					</div>
-					<div className={styles.tooltipContent}>
-						<p className={styles.interactionCount}>
-							Interactions: <strong>{hoveredCountry.interactionCount}</strong>
-						</p>
-						<p className={styles.clickHint}>Click for details</p>
-					</div>
-				</div>
-			)}
+			{/* New compact tooltip component */}
+			<CountryTooltip country={hoveredCountry} />
 		</div>
 	)
 }
