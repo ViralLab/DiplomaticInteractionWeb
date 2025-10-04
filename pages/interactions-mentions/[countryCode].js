@@ -14,6 +14,7 @@ import {
 import CountryFlag from '@/components/countries/countryFlag';
 import countriesData from '@/data/countries';
 import WorkInProgress from '@/components/utils/workInProgress/WorkInProgress';
+import NetworkGraph from '@/components/map/networkGraph';
 import styles from './countryDetail.module.css';
 
 const CountryPage = () => {
@@ -299,6 +300,12 @@ const CountryPage = () => {
     </Tab.Pane>
   );
 
+  const networkTab = (
+    <Tab.Pane style={{ height: '600px', position: 'relative' }}>
+      <NetworkGraph initialCountry={countryCode} />
+    </Tab.Pane>
+  );
+
   const panes = [
     {
       menuItem: 'Mentions',
@@ -307,6 +314,10 @@ const CountryPage = () => {
     {
       menuItem: 'Interactions',
       render: () => interactionsTab,
+    },
+    {
+      menuItem: 'Network',
+      render: () => networkTab,
     },
   ];
 

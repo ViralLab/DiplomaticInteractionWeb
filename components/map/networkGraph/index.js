@@ -148,11 +148,11 @@ const CountryNode = ({ data }) => {
 const DEFAULT_COUNTRY = "TUR";
 
 // ---------- main component ----------
-export default function NetworkGraph() {
+export default function NetworkGraph({ initialCountry = null }) {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedCountry, setSelectedCountry] = useState(initialCountry);
   const [loading, setLoading] = useState(false);
   const [showMapInfo, setShowMapInfo] = useState(true);
 
@@ -187,8 +187,13 @@ export default function NetworkGraph() {
 
         setGraph(graphData);
 
+        // Use initialCountry if provided, otherwise fall back to DEFAULT_COUNTRY or first node
+        const hasInitial = initialCountry && graphData.nodes.some((n) => n.id === initialCountry);
         const hasDefault = graphData.nodes.some((n) => n.id === DEFAULT_COUNTRY);
-        const initial = hasDefault
+        
+        const initial = hasInitial
+          ? initialCountry
+          : hasDefault
           ? DEFAULT_COUNTRY
           : graphData.nodes[0]?.id || null;
 
@@ -202,7 +207,18 @@ export default function NetworkGraph() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [initialCountry]);
+
+  // Update selected country when initialCountry prop changes
+  useEffect(() => {
+    if (initialCountry && graph.nodes.length > 0) {
+      const hasCountry = graph.nodes.some((n) => n.id === initialCountry);
+      if (hasCountry) {
+        setSelectedCountry(initialCountry);
+        buildEgoNetwork(graph, initialCountry, setNodes, setEdges);
+      }
+    }
+  }, [initialCountry, graph]);
 
   const handleCountrySelect = (_e, { value }) => {
     setSelectedCountry(value);
