@@ -261,7 +261,7 @@ const CountryPage = () => {
               style={{ marginBottom: '0.25rem', color: '#666', fontSize: '0.85em' }}
             >
               Page {activePage} of {Math.ceil(pageMeta.total / pageMeta.limit) || 1}
-              &nbsp; | &nbsp; {pageMeta.total} total interactions
+              &nbsp; | &nbsp; {pageMeta.total} total mentions
             </div>
 
             <Pagination
@@ -325,7 +325,7 @@ const CountryPage = () => {
       <div className={styles.headerSection}>
         <Button 
           icon='arrow left' 
-          content='Back to Interactions' 
+          content='Back' 
           onClick={handleBackToCountries}
           className={styles.backButton}
         />
@@ -341,9 +341,15 @@ const CountryPage = () => {
           <div className={styles.countryInfo}>
             <h1 className={styles.countryName}>{countryInfo.name}</h1>
             <p className={styles.countryCode}>{countryCode}</p>
-            <div className={styles.interactionStats}>
-              <Icon name='exchange' />
-              <span>{pageMeta.total} total interactions</span>
+            <div className={styles.stats}>
+              <div className={styles.interactionStats}>
+                <Icon name='exchange' />
+                <span>{"-"} total interactions</span>
+              </div>
+              <div className={styles.mentionStats}>
+                <Icon name='chat' />
+                <span>{pageMeta.total} total mentions</span>
+              </div>
             </div>
           </div>
         </div>

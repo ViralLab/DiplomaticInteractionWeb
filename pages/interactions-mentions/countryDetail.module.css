@@ -84,6 +84,16 @@
   font-weight: 500;
 }
 
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.mentionStats {
+  color: #5e9ec9 !important;
+}
+
 .interactionStats .icon {
   font-size: 1rem;
 }
