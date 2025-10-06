@@ -138,3 +138,150 @@
 .paginationWrapper :global(.ui.pagination.menu .active.item:hover) {
 	background-color: #1678c2;
 }
+
+/* Time Series Chart Styles */
+.pairControls {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 8px;
+  border: 1px solid #e1e5e9;
+}
+
+.pairControlsRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pairTitle {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.countryDropdown {
+  width: 100%;
+}
+
+/* Chart */
+.chartCard {
+  background: #ffffff;
+  border: 1px solid #e7eef3;
+  border-radius: 16px;
+  padding: 1rem 1.25rem;
+  margin: 0 auto 1.5rem auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.chartHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.chartTitle {
+  color: #23424a;
+  font-weight: 700;
+}
+
+.chartSub {
+  color: #6b8790;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loadingIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4aa89d;
+  font-size: 0.85rem;
+}
+
+.chartSvg {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+}
+
+.axisLabel {
+  font-size: 12px;
+  fill: #6b8790;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.chartLoading, .chartError, .chartEmpty {
+  color: #6b8790;
+  padding: 0.5rem 0.75rem;
+}
+
+.chartLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(248, 249, 250, 0.8);
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.legendColorLoading {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.legendText {
+  color: #495057;
+  font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chartHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .chartSub {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .chartLegend {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+  
+  .pairControlsRow {
+    gap: 1rem;
+  }
+}
