@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   Modal,
   Table,
@@ -31,6 +31,7 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
 
   // cache to store fetched pages
   const [pageCache, setPageCache] = useState({})
+  const latestRequestKeyRef = useRef(null)
 
   const countryName = country?.title || country?.name || ''
 
@@ -73,15 +74,18 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
     return null;
   }
 
-  const fetchPage = async (page = 1, prefetch = false) => {
+  const fetchPage = async (page = 1, prefetch = false, sortOverride = null) => {
     const countryCode = resolveCountryCode()
     if (!countryCode) {
       setError('Country code could not be resolved.')
       return
     }
 
-    // if cached already
-    if (pageCache[page]) {
+    const sortParam = sortOverride?.field || sortField
+    const orderParam = sortOverride?.direction || sortDirection
+
+    // if cached already for current sort
+    if (pageCache[page] && pageCache[page].sort && pageCache[page].sort.field === sortParam && pageCache[page].sort.direction === orderParam) {
       if (!prefetch) {
         setInteractions(pageCache[page].data)
         setPageMeta(pageCache[page].pageMeta)
@@ -96,7 +100,11 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
     try {
       const limit = pageMeta.limit || 20
       const offset = (page - 1) * limit
-      const url = `/api/country/${countryCode}?limit=${limit}&offset=${offset}`
+      const requestKey = `${countryCode}:${page}:${sortParam}:${orderParam}`
+      if (!prefetch) {
+        latestRequestKeyRef.current = requestKey
+      }
+      const url = `/api/country/${countryCode}?limit=${limit}&offset=${offset}&sort=${encodeURIComponent(sortParam)}&order=${encodeURIComponent(orderParam)}`
       const res = await fetch(url)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = await res.json()
@@ -108,13 +116,17 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
         hasMore: data?.pagination?.hasMore ?? false,
       }
 
-      // store in cache
+      // store in cache with sort signature
       setPageCache(prev => ({
         ...prev,
-        [page]: { data: data?.data || [], pageMeta: newPageMeta }
+        [page]: { data: data?.data || [], pageMeta: newPageMeta, sort: { field: sortParam, direction: orderParam } }
       }))
 
       if (!prefetch) {
+        if (latestRequestKeyRef.current !== requestKey) {
+          // stale response, ignore
+          return
+        }
         setInteractions(data?.data || [])
         setPageMeta(newPageMeta)
         setActivePage(page)
@@ -143,30 +155,19 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
   }, [activePage, pageMeta.total])
 
   const handleSort = (field) => {
+    let nextField = field
+    let nextDirection = 'desc'
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortField(field)
-      setSortDirection('desc')
+      nextDirection = sortDirection === 'asc' ? 'desc' : 'asc'
     }
+    setSortField(nextField)
+    setSortDirection(nextDirection)
+    setPageCache({})
+    setActivePage(1)
+    fetchPage(1, false, { field: nextField, direction: nextDirection })
   }
 
-  const sortedInteractions = [...interactions].sort((a, b) => {
-    if (sortField === 'date') {
-      const ad = new Date(a.date)
-      const bd = new Date(b.date)
-      return sortDirection === 'desc' ? bd - ad : ad - bd
-    } else if (sortField === 'reporter') {
-      return sortDirection === 'desc'
-        ? (b.reporterName || '').localeCompare(a.reporterName || '')
-        : (a.reporterName || '').localeCompare(b.reporterName || '')
-    } else if (sortField === 'reported') {
-      return sortDirection === 'desc'
-        ? (b.reportedName || '').localeCompare(a.reportedName || '')
-        : (a.reportedName || '').localeCompare(b.reportedName || '')
-    }
-    return 0
-  })
+  const sortedInteractions = interactions // server provides sorted list
 
   const mentionsTab = (
     <Tab.Pane>
@@ -189,24 +190,30 @@ const CountryDataModal = ({ country, modalOpen, onModalClose }) => {
         </Segment>
       ) : interactions.length > 0 ? (
         <>
+          {loading && interactions.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#666', marginBottom: '0.5rem' }}>
+              <Icon name="spinner" loading />
+              <span>Updating…</span>
+            </div>
+          )}
           <div className={styles.tableWrapper}>
             <Table celled compact size="small" className={styles.fittedTable}>
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell
-                    onClick={() => handleSort('reporter')}
+                    onClick={() => { if (!loading) handleSort('reporter') }}
                     className={styles.sortableHeader}
                   >
                     Reporter
                   </Table.HeaderCell>
                   <Table.HeaderCell
-                    onClick={() => handleSort('reported')}
+                    onClick={() => { if (!loading) handleSort('reported') }}
                     className={styles.sortableHeader}
                   >
                     Reported
                   </Table.HeaderCell>
                   <Table.HeaderCell
-                    onClick={() => handleSort('date')}
+                    onClick={() => { if (!loading) handleSort('date') }}
                     className={styles.sortableHeader}
                   >
                     Date

@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 async function handleGet(req, res) {
   try {
     const { countryCode } = req.query
-    const { limit = 50, offset = 0 } = req.query
+    const { limit = 50, offset = 0, sort = 'date', order = 'desc' } = req.query
     
     if (!countryCode) {
       return res.status(400).json({ error: 'Country code is required' })
@@ -35,9 +35,8 @@ async function handleGet(req, res) {
     }
     
     const result = await mentionsService.getInteractionsForCountry(
-      countryCode, 
-      parseInt(limit), 
-      parseInt(offset)
+      countryCode,
+      { limit: parseInt(limit), offset: parseInt(offset), sort, order }
     )
     
     if (result.error) {

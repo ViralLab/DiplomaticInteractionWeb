@@ -31,11 +31,10 @@ async function handleGet(req, res) {
       })
     }
     
-    // 🔑 Pull interactions
+    // 🔑 Pull interactions with server-side sort defaults
     const result = await mentionsService.getInteractionsForCountry(
-      countryCode, 
-      parseInt(limit), 
-      parseInt(offset)
+      countryCode,
+      { limit: parseInt(limit), offset: parseInt(offset), sort: 'date', order: 'desc' }
     )
     
     const enrichedData = result.data.map(interaction => {
