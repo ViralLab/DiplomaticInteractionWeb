@@ -127,7 +127,7 @@
 }
 
 .countryDropdown {
-  min-width: 260px !important;
+  min-width: 300px !important;
 }
 
 /* Tabs styling */
@@ -304,6 +304,18 @@
 .chartSub {
   color: #6b8790;
   font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.loadingIndicator {
+  color: #4aa89d;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .chartSvg {
@@ -321,6 +333,45 @@
 .chartLoading, .chartError, .chartEmpty {
   color: #6b8790;
   padding: 0.5rem 0.75rem;
+}
+
+.chartLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.legendColorLoading {
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.legendText {
+  color: #2c3e50;
+  font-weight: 500;
 }
 
 /* Loading and empty states */
@@ -419,6 +470,24 @@
     padding: 0.5rem !important;
     font-size: 0.9rem !important;
   }
+  
+  .chartLegend {
+    gap: 0.75rem;
+    padding: 0.5rem;
+  }
+  
+  .legendItem {
+    font-size: 0.8rem;
+  }
+  
+  .legendColor {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .loadingIndicator {
+    font-size: 0.8rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -460,5 +529,34 @@
   .backButton {
     padding: 0.5rem 1rem !important;
     font-size: 0.9rem !important;
+  }
+  
+  .chartLegend {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+  
+  .legendItem {
+    font-size: 0.75rem;
+  }
+  
+  .legendColor {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .countryDropdown {
+    min-width: 250px !important;
+  }
+  
+  .chartSub {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .loadingIndicator {
+    font-size: 0.75rem;
   }
 }

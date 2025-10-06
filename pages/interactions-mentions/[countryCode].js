@@ -30,11 +30,12 @@ const CountryPage = () => {
   const [error, setError] = useState(null);
   const [countryInfo, setCountryInfo] = useState(null);
 
-  // Pairwise series state
-  const [secondCountry, setSecondCountry] = useState(null);
-  const [pairSeries, setPairSeries] = useState([]);
-  const [pairLoading, setPairLoading] = useState(false);
-  const [pairError, setPairError] = useState(null);
+  // Multi-country series state
+  const [selectedCountries, setSelectedCountries] = useState([]);
+  const [multiSeries, setMultiSeries] = useState([]);
+  const [multiLoading, setMultiLoading] = useState(false);
+  const [multiError, setMultiError] = useState(null);
+  const [loadingCountries, setLoadingCountries] = useState([]);
   
   const [pageMeta, setPageMeta] = useState({
     limit: 20,
@@ -54,31 +55,54 @@ const CountryPage = () => {
     }
   }, [countryCode]);
 
-  // Fetch pairwise series when second country changes
+  // Fetch multi-country series when selected countries change
   useEffect(() => {
-    if (!countryCode || !secondCountry) return;
-    fetchPairSeries(countryCode, secondCountry);
-  }, [countryCode, secondCountry]);
+    if (!countryCode || selectedCountries.length === 0) {
+      setMultiSeries([]);
+      return;
+    }
+    fetchMultiSeries(countryCode, selectedCountries);
+  }, [countryCode, selectedCountries]);
 
-  const fetchPairSeries = async (a, b) => {
+  const fetchMultiSeries = async (baseCountry, countries) => {
     try {
-      setPairLoading(true);
-      setPairError(null);
-      setPairSeries([]);
-      const url = `/api/mentions/pair?countryA=${encodeURIComponent(a)}&countryB=${encodeURIComponent(b)}`;
+      setMultiLoading(true);
+      setMultiError(null);
+      setMultiSeries([]);
+      setLoadingCountries([...countries]); // Track which countries are being loaded
+      
+      const url = `/api/mentions/multi?baseCountry=${encodeURIComponent(baseCountry)}&countries=${countries.join(',')}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setPairSeries(Array.isArray(data.series) ? data.series : []);
+      setMultiSeries(Array.isArray(data.countrySeries) ? data.countrySeries : []);
     } catch (e) {
-      console.error('Failed to fetch pair series:', e);
-      setPairError('Failed to load pairwise series.');
+      console.error('Failed to fetch multi-country series:', e);
+      setMultiError('Failed to load multi-country series.');
     } finally {
-      setPairLoading(false);
+      setMultiLoading(false);
+      setLoadingCountries([]); // Clear loading countries
     }
   };
 
-  const PairSeriesChart = ({ countryA, countryB, series, loading, error, onRetry }) => {
+  // Color palette for different countries
+  const getCountryColor = (index) => {
+    const colors = [
+      '#4aa89d', // Teal
+      '#e74c3c', // Red
+      '#3498db', // Blue
+      '#f39c12', // Orange
+      '#9b59b6', // Purple
+      '#2ecc71', // Green
+      '#e67e22', // Dark Orange
+      '#34495e', // Dark Blue
+      '#f1c40f', // Yellow
+      '#1abc9c', // Light Teal
+    ];
+    return colors[index % colors.length];
+  };
+
+  const MultiSeriesChart = ({ baseCountry, countrySeries, loading, error, onRetry, loadingCountries }) => {
     const containerRef = useRef(null);
     const [containerWidth, setContainerWidth] = useState(0);
 
@@ -100,12 +124,22 @@ const CountryPage = () => {
       return { width, height, margin, innerWidth: width - margin.left - margin.right, innerHeight: height - margin.top - margin.bottom };
     }, [containerWidth]);
 
-    const { xScale, yScale, ticks, pathD } = useMemo(() => {
-      const years = series.map(d => d.year);
-      const counts = series.map(d => d.count);
+    const { xScale, yScale, ticks, paths } = useMemo(() => {
+      // Collect all years and counts from all series
+      const allYears = new Set();
+      const allCounts = [];
+      
+      countrySeries.forEach(countryData => {
+        countryData.series.forEach(point => {
+          allYears.add(point.year);
+          allCounts.push(point.count);
+        });
+      });
+
+      const years = Array.from(allYears).sort((a, b) => a - b);
       const minYear = years.length ? Math.min(...years) : new Date().getFullYear() - 5;
       const maxYear = years.length ? Math.max(...years) : new Date().getFullYear();
-      const maxCountRaw = counts.length ? Math.max(...counts) : 1;
+      const maxCountRaw = allCounts.length ? Math.max(...allCounts) : 1;
       const yMax = Math.max(1, maxCountRaw);
 
       const xScaleFn = (y) => {
@@ -116,77 +150,141 @@ const CountryPage = () => {
         return dims.margin.top + dims.innerHeight - (c / yMax) * dims.innerHeight;
       };
 
-      const sorted = [...series].sort((a, b) => a.year - b.year);
-      const d = sorted.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${xScaleFn(p.year)} ${yScaleFn(p.count)}`).join(' ');
+      // Create paths for each country
+      const countryPaths = countrySeries.map((countryData, index) => {
+        const sorted = [...countryData.series].sort((a, b) => a.year - b.year);
+        const d = sorted.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${xScaleFn(p.year)} ${yScaleFn(p.count)}`).join(' ');
+        return {
+          countryCode: countryData.countryCode,
+          path: d,
+          points: sorted,
+          color: getCountryColor(index)
+        };
+      });
+
       const ticksArr = [];
       for (let y = minYear; y <= maxYear; y++) ticksArr.push(y);
+      
       // Build integer y-axis ticks with a nice step
       const step = Math.max(1, Math.ceil(yMax / 4));
       const yTicks = [];
       for (let v = 0; v <= yMax; v += step) yTicks.push(v);
       if (yTicks[yTicks.length - 1] !== yMax) yTicks.push(yMax);
-      return { xScale: xScaleFn, yScale: yScaleFn, ticks: { years: ticksArr, y: yTicks, yMax }, pathD: d };
-    }, [series, dims]);
+      
+      return { 
+        xScale: xScaleFn, 
+        yScale: yScaleFn, 
+        ticks: { years: ticksArr, y: yTicks, yMax }, 
+        paths: countryPaths 
+      };
+    }, [countrySeries, dims]);
+
+    const totalMentions = countrySeries.reduce((sum, countryData) => sum + countryData.total, 0);
 
     return (
       <div className={styles.chartCard} ref={containerRef}>
         <div className={styles.chartHeader}>
-          <div className={styles.chartTitle}># of times {countryA} is mentioned by {countryB}</div>
-          <div className={styles.chartSub}>Year by year</div>
+          <div className={styles.chartTitle}>Mentions of {countriesData.find(c => c.countryCode === baseCountry)?.name || baseCountry} by selected countries</div>
+          <div className={styles.chartSub}>
+            Year by year • Total: {totalMentions} mentions
+            {loadingCountries.length > 0 && (
+              <span className={styles.loadingIndicator}>
+                <Icon name='spinner' loading size='small' /> Loading {loadingCountries.length} countries...
+              </span>
+            )}
+          </div>
         </div>
         {loading ? (
-          <div className={styles.chartLoading}><Icon name='spinner' loading /> Loading pairwise series…</div>
+          <div className={styles.chartLoading}><Icon name='spinner' loading /> Loading multi-country series…</div>
         ) : error ? (
           <div className={styles.chartError}>
             <Icon name='warning circle' /> {error}
             <Button size='tiny' basic onClick={onRetry} style={{ marginLeft: '0.75rem' }}>Retry</Button>
           </div>
-        ) : series.length === 0 ? (
-          <div className={styles.chartEmpty}><Icon name='info circle' /> No mentions between selected countries.</div>
+        ) : countrySeries.length === 0 || totalMentions === 0 ? (
+          <div className={styles.chartEmpty}><Icon name='info circle' /> No mentions found for selected countries.</div>
         ) : (
-          <svg
-            className={styles.chartSvg}
-            width="100%"
-            height={dims.height}
-            viewBox={`0 0 ${dims.width} ${dims.height}`}
-            preserveAspectRatio="xMidYMid meet"
-          >
-            <defs>
-              <linearGradient id='lineGrad' x1='0' x2='0' y1='0' y2='1'>
-                <stop offset='0%' stopColor='#4aa89d' stopOpacity='1' />
-                <stop offset='100%' stopColor='#5bb8ad' stopOpacity='1' />
-              </linearGradient>
-            </defs>
-            <rect x='0' y='0' width={dims.width} height={dims.height} rx='12' ry='12' fill='white' />
-            {/* Y grid */}
-            {ticks.y.map((yVal, idx) => {
-              const y = dims.margin.top + dims.innerHeight - (yVal / ticks.yMax) * dims.innerHeight;
-              return (
-                <g key={idx}>
-                  <line x1={dims.margin.left} x2={dims.margin.left + dims.innerWidth} y1={y} y2={y} stroke='#edf2f7' />
-                  <text x={dims.margin.left - 10} y={y} textAnchor='end' dominantBaseline='middle' className={styles.axisLabel}>{yVal}</text>
+          <>
+            <svg
+              className={styles.chartSvg}
+              width="100%"
+              height={dims.height}
+              viewBox={`0 0 ${dims.width} ${dims.height}`}
+              preserveAspectRatio="xMidYMid meet"
+            >
+              <defs>
+                {paths.map((pathData, index) => (
+                  <linearGradient key={`grad-${pathData.countryCode}`} id={`lineGrad-${pathData.countryCode}`} x1='0' x2='0' y1='0' y2='1'>
+                    <stop offset='0%' stopColor={pathData.color} stopOpacity='1' />
+                    <stop offset='100%' stopColor={pathData.color} stopOpacity='0.8' />
+                  </linearGradient>
+                ))}
+              </defs>
+              <rect x='0' y='0' width={dims.width} height={dims.height} rx='12' ry='12' fill='white' />
+              {/* Y grid */}
+              {ticks.y.map((yVal, idx) => {
+                const y = dims.margin.top + dims.innerHeight - (yVal / ticks.yMax) * dims.innerHeight;
+                return (
+                  <g key={idx}>
+                    <line x1={dims.margin.left} x2={dims.margin.left + dims.innerWidth} y1={y} y2={y} stroke='#edf2f7' />
+                    <text x={dims.margin.left - 10} y={y} textAnchor='end' dominantBaseline='middle' className={styles.axisLabel}>{yVal}</text>
+                  </g>
+                );
+              })}
+              {/* X axis */}
+              {ticks.years.map((yr, i) => (
+                <g key={yr}>
+                  <line x1={xScale(yr)} x2={xScale(yr)} y1={dims.margin.top + dims.innerHeight} y2={dims.margin.top + dims.innerHeight + 6} stroke='#cbd5e0' />
+                  {(i === 0 || i === ticks.years.length - 1 || (yr % 2 === 0)) && (
+                    <text x={xScale(yr)} y={dims.margin.top + dims.innerHeight + 20} textAnchor='middle' className={styles.axisLabel}>{yr}</text>
+                  )}
                 </g>
-              );
-            })}
-            {/* X axis */}
-            {ticks.years.map((yr, i) => (
-              <g key={yr}>
-                <line x1={xScale(yr)} x2={xScale(yr)} y1={dims.margin.top + dims.innerHeight} y2={dims.margin.top + dims.innerHeight + 6} stroke='#cbd5e0' />
-                {(i === 0 || i === ticks.years.length - 1 || (yr % 2 === 0)) && (
-                  <text x={xScale(yr)} y={dims.margin.top + dims.innerHeight + 20} textAnchor='middle' className={styles.axisLabel}>{yr}</text>
-                )}
-              </g>
-            ))}
-            {/* Line */}
-            <path d={pathD} fill='none' stroke='url(#lineGrad)' strokeWidth='3' />
-            {/* Points */}
-            {series.sort((a,b)=>a.year-b.year).map((p) => (
-              <g key={p.year}>
-                <circle cx={xScale(p.year)} cy={yScale(p.count)} r='4' fill='#4aa89d' />
-                <title>{`${p.year}: ${p.count}`}</title>
-              </g>
-            ))}
-          </svg>
+              ))}
+              {/* Lines for each country */}
+              {paths.map((pathData) => (
+                <g key={pathData.countryCode}>
+                  <path d={pathData.path} fill='none' stroke={`url(#lineGrad-${pathData.countryCode})`} strokeWidth='3' />
+                  {/* Points */}
+                  {pathData.points.map((p) => (
+                    <g key={`${pathData.countryCode}-${p.year}`}>
+                      <circle cx={xScale(p.year)} cy={yScale(p.count)} r='4' fill={pathData.color} />
+                      <title>{`${pathData.countryCode} - ${p.year}: ${p.count}`}</title>
+                    </g>
+                  ))}
+                </g>
+              ))}
+            </svg>
+            {/* Legend */}
+            <div className={styles.chartLegend}>
+              {paths.map((pathData) => {
+                const countryData = countrySeries.find(cs => cs.countryCode === pathData.countryCode);
+                const countryInfo = countriesData.find(c => c.countryCode === pathData.countryCode);
+                return (
+                  <div key={pathData.countryCode} className={styles.legendItem}>
+                    <div className={styles.legendColor} style={{ backgroundColor: pathData.color }}></div>
+                    <span className={styles.legendText}>
+                      {countryInfo?.name || pathData.countryCode} ({countryData?.total || 0} mentions)
+                    </span>
+                  </div>
+                );
+              })}
+              {/* Show loading states for countries that are being loaded */}
+              {loadingCountries.map((countryCode) => {
+                const countryInfo = countriesData.find(c => c.countryCode === countryCode);
+                const countryIndex = loadingCountries.indexOf(countryCode);
+                return (
+                  <div key={`loading-${countryCode}`} className={styles.legendItem}>
+                    <div className={styles.legendColorLoading}>
+                      <Icon name='spinner' loading size='small' />
+                    </div>
+                    <span className={styles.legendText}>
+                      {countryInfo?.name || countryCode} (Loading...)
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
     );
@@ -198,9 +296,10 @@ const CountryPage = () => {
     setSortField('date');
     setSortDirection('desc');
     setPageCache({});
-    setSecondCountry(null);
-    setPairSeries([]);
-    setPairError(null);
+    setSelectedCountries([]);
+    setMultiSeries([]);
+    setMultiError(null);
+    setLoadingCountries([]);
   }, [countryCode]);
 
   // Fetch country-specific data
@@ -458,38 +557,39 @@ const CountryPage = () => {
     <Tab.Pane>
       <div className={styles.pairControls}>
         <div className={styles.pairControlsRow}>
-          <div className={styles.pairTitle}>Time series between two countries</div>
+          <div className={styles.pairTitle}>Time series: mentions of {countryInfo?.name || countryCode} by other countries</div>
           <Dropdown
-            placeholder='Select second country'
+            placeholder='Select countries to compare'
             selection
+            multiple
             clearable
-            value={secondCountry}
+            value={selectedCountries}
             className={styles.countryDropdown}
             options={countriesData
               .filter(c => c.countryCode !== countryCode)
               .map(c => ({ key: c.countryCode, value: c.countryCode, text: `${c.name} (${c.countryCode})` }))}
-            onChange={(e, { value }) => setSecondCountry(value || null)}
+            onChange={(e, { value }) => setSelectedCountries(value || [])}
             noResultsMessage='No countries found'
           />
         </div>
       </div>
 
-      {secondCountry ? (
-        <PairSeriesChart
-          countryA={countryCode}
-          countryB={secondCountry}
-          series={pairSeries}
-          loading={pairLoading}
-          error={pairError}
-          onRetry={() => fetchPairSeries(countryCode, secondCountry)}
+      {selectedCountries.length > 0 ? (
+        <MultiSeriesChart
+          baseCountry={countryCode}
+          countrySeries={multiSeries}
+          loading={multiLoading}
+          error={multiError}
+          onRetry={() => fetchMultiSeries(countryCode, selectedCountries)}
+          loadingCountries={loadingCountries}
         />
       ) : (
         <Segment placeholder className={styles.loadingSegment}>
           <Header icon textAlign="center">
             <Icon name="search" size="big" />
-            Select a second country
+            Select countries to compare
             <Header.Subheader>
-              Use the dropdown above to see year-by-year mentions between countries.
+              Use the dropdown above to select multiple countries and see year-by-year mentions.
             </Header.Subheader>
           </Header>
         </Segment>
