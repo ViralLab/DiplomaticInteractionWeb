@@ -80,33 +80,52 @@ const CountryPage = () => {
 
   const PairSeriesChart = ({ countryA, countryB, series, loading, error, onRetry }) => {
     const containerRef = useRef(null);
-    const dims = useMemo(() => {
-      const width = 800;
-      const height = 260;
-      const margin = { top: 24, right: 24, bottom: 36, left: 48 };
-      return { width, height, margin, innerWidth: width - margin.left - margin.right, innerHeight: height - margin.top - margin.bottom };
+    const [containerWidth, setContainerWidth] = useState(0);
+
+    useEffect(() => {
+      const update = () => {
+        if (containerRef.current) {
+          setContainerWidth(containerRef.current.clientWidth);
+        }
+      };
+      update();
+      window.addEventListener('resize', update);
+      return () => window.removeEventListener('resize', update);
     }, []);
+
+    const dims = useMemo(() => {
+      const width = Math.max(600, containerWidth || 900);
+      const height = 360;
+      const margin = { top: 24, right: 24, bottom: 44, left: 56 };
+      return { width, height, margin, innerWidth: width - margin.left - margin.right, innerHeight: height - margin.top - margin.bottom };
+    }, [containerWidth]);
 
     const { xScale, yScale, ticks, pathD } = useMemo(() => {
       const years = series.map(d => d.year);
       const counts = series.map(d => d.count);
       const minYear = years.length ? Math.min(...years) : new Date().getFullYear() - 5;
       const maxYear = years.length ? Math.max(...years) : new Date().getFullYear();
-      const maxCount = counts.length ? Math.max(...counts) : 1;
+      const maxCountRaw = counts.length ? Math.max(...counts) : 1;
+      const yMax = Math.max(1, maxCountRaw);
 
       const xScaleFn = (y) => {
         if (maxYear === minYear) return dims.margin.left + dims.innerWidth / 2;
         return dims.margin.left + ((y - minYear) / (maxYear - minYear)) * dims.innerWidth;
       };
       const yScaleFn = (c) => {
-        return dims.margin.top + dims.innerHeight - (c / Math.max(maxCount, 1)) * dims.innerHeight;
+        return dims.margin.top + dims.innerHeight - (c / yMax) * dims.innerHeight;
       };
 
       const sorted = [...series].sort((a, b) => a.year - b.year);
       const d = sorted.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${xScaleFn(p.year)} ${yScaleFn(p.count)}`).join(' ');
       const ticksArr = [];
       for (let y = minYear; y <= maxYear; y++) ticksArr.push(y);
-      return { xScale: xScaleFn, yScale: yScaleFn, ticks: { years: ticksArr, maxCount }, pathD: d };
+      // Build integer y-axis ticks with a nice step
+      const step = Math.max(1, Math.ceil(yMax / 4));
+      const yTicks = [];
+      for (let v = 0; v <= yMax; v += step) yTicks.push(v);
+      if (yTicks[yTicks.length - 1] !== yMax) yTicks.push(yMax);
+      return { xScale: xScaleFn, yScale: yScaleFn, ticks: { years: ticksArr, y: yTicks, yMax }, pathD: d };
     }, [series, dims]);
 
     return (
@@ -125,7 +144,13 @@ const CountryPage = () => {
         ) : series.length === 0 ? (
           <div className={styles.chartEmpty}><Icon name='info circle' /> No mentions between selected countries.</div>
         ) : (
-          <svg width={dims.width} height={dims.height} className={styles.chartSvg}>
+          <svg
+            className={styles.chartSvg}
+            width="100%"
+            height={dims.height}
+            viewBox={`0 0 ${dims.width} ${dims.height}`}
+            preserveAspectRatio="xMidYMid meet"
+          >
             <defs>
               <linearGradient id='lineGrad' x1='0' x2='0' y1='0' y2='1'>
                 <stop offset='0%' stopColor='#4aa89d' stopOpacity='1' />
@@ -134,13 +159,12 @@ const CountryPage = () => {
             </defs>
             <rect x='0' y='0' width={dims.width} height={dims.height} rx='12' ry='12' fill='white' />
             {/* Y grid */}
-            {Array.from({ length: 4 }).map((_, idx) => {
-              const yVal = (ticks.maxCount * idx) / 4;
-              const y = dims.margin.top + dims.innerHeight - (yVal / Math.max(ticks.maxCount, 1)) * dims.innerHeight;
+            {ticks.y.map((yVal, idx) => {
+              const y = dims.margin.top + dims.innerHeight - (yVal / ticks.yMax) * dims.innerHeight;
               return (
                 <g key={idx}>
                   <line x1={dims.margin.left} x2={dims.margin.left + dims.innerWidth} y1={y} y2={y} stroke='#edf2f7' />
-                  <text x={dims.margin.left - 10} y={y} textAnchor='end' dominantBaseline='middle' className={styles.axisLabel}>{Math.round(yVal)}</text>
+                  <text x={dims.margin.left - 10} y={y} textAnchor='end' dominantBaseline='middle' className={styles.axisLabel}>{yVal}</text>
                 </g>
               );
             })}
@@ -289,35 +313,6 @@ const CountryPage = () => {
 
   const mentionsTab = (
     <Tab.Pane>
-      <div className={styles.pairControls}>
-        <div className={styles.pairControlsRow}>
-          <div className={styles.pairTitle}>Compare mentions with another country</div>
-          <Dropdown
-            placeholder='Select second country'
-            selection
-            clearable
-            value={secondCountry}
-            className={styles.countryDropdown}
-            options={countriesData
-              .filter(c => c.countryCode !== countryCode)
-              .map(c => ({ key: c.countryCode, value: c.countryCode, text: `${c.name} (${c.countryCode})` }))}
-            onChange={(e, { value }) => setSecondCountry(value || null)}
-            noResultsMessage='No countries found'
-          />
-        </div>
-      </div>
-
-      {secondCountry && (
-        <PairSeriesChart
-          countryA={countryCode}
-          countryB={secondCountry}
-          series={pairSeries}
-          loading={pairLoading}
-          error={pairError}
-          onRetry={() => fetchPairSeries(countryCode, secondCountry)}
-        />
-      )}
-
       {loading && interactions.length === 0 ? (
         <Segment placeholder className={styles.loadingSegment}>
           <Header icon textAlign="center">
@@ -459,6 +454,49 @@ const CountryPage = () => {
     </Tab.Pane>
   );
 
+  const compareTab = (
+    <Tab.Pane>
+      <div className={styles.pairControls}>
+        <div className={styles.pairControlsRow}>
+          <div className={styles.pairTitle}>Time series between two countries</div>
+          <Dropdown
+            placeholder='Select second country'
+            selection
+            clearable
+            value={secondCountry}
+            className={styles.countryDropdown}
+            options={countriesData
+              .filter(c => c.countryCode !== countryCode)
+              .map(c => ({ key: c.countryCode, value: c.countryCode, text: `${c.name} (${c.countryCode})` }))}
+            onChange={(e, { value }) => setSecondCountry(value || null)}
+            noResultsMessage='No countries found'
+          />
+        </div>
+      </div>
+
+      {secondCountry ? (
+        <PairSeriesChart
+          countryA={countryCode}
+          countryB={secondCountry}
+          series={pairSeries}
+          loading={pairLoading}
+          error={pairError}
+          onRetry={() => fetchPairSeries(countryCode, secondCountry)}
+        />
+      ) : (
+        <Segment placeholder className={styles.loadingSegment}>
+          <Header icon textAlign="center">
+            <Icon name="search" size="big" />
+            Select a second country
+            <Header.Subheader>
+              Use the dropdown above to see year-by-year mentions between countries.
+            </Header.Subheader>
+          </Header>
+        </Segment>
+      )}
+    </Tab.Pane>
+  );
+
   const panes = [
     {
       menuItem: 'Mentions',
@@ -471,6 +509,10 @@ const CountryPage = () => {
     {
       menuItem: 'Network',
       render: () => networkTab,
+    },
+    {
+      menuItem: 'Time Series',
+      render: () => compareTab,
     },
   ];
 

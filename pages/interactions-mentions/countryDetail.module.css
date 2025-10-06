@@ -283,9 +283,10 @@
   background: #ffffff;
   border: 1px solid #e7eef3;
   border-radius: 16px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  margin: 0 auto 1.5rem auto;
   box-shadow: 0 8px 24px rgba(2, 44, 34, 0.06);
+  max-width: 100%;
 }
 
 .chartHeader {
@@ -306,8 +307,10 @@
 }
 
 .chartSvg {
-  width: 100%;
-  height: auto;
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
 }
 
 .axisLabel {
