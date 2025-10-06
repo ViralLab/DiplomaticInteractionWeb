@@ -131,7 +131,7 @@ const CountryPage = () => {
     return (
       <div className={styles.chartCard} ref={containerRef}>
         <div className={styles.chartHeader}>
-          <div className={styles.chartTitle}>Mentions between {countryA} and {countryB}</div>
+          <div className={styles.chartTitle}># of times {countryA} is mentioned by {countryB}</div>
           <div className={styles.chartSub}>Year by year</div>
         </div>
         {loading ? (
